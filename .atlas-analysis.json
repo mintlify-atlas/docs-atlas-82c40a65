@@ -1,0 +1,163 @@
+{
+  "projectType": "ai-ml",
+  "projectName": "Hugging Face Agents Course",
+  "projectDescription": "A free, comprehensive course taking learners from beginner to expert in understanding, building, and deploying AI agents using smolagents, LangGraph, and LlamaIndex.",
+  "theme": "maple",
+  "primaryColor": "#fbc016",
+  "lightColor": "#ed3e3b",
+  "darkColor": "#433f43",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Course",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "unit0/introduction",
+              "unit0/onboarding",
+              "unit0/discord101"
+            ]
+          },
+          {
+            "group": "Unit 1: Introduction to Agents",
+            "pages": [
+              "unit1/introduction",
+              "unit1/what-are-agents",
+              "unit1/what-are-llms",
+              "unit1/messages-and-special-tokens",
+              "unit1/tools",
+              "unit1/agent-steps-and-structure",
+              "unit1/thoughts",
+              "unit1/actions",
+              "unit1/observations",
+              "unit1/dummy-agent-library",
+              "unit1/tutorial",
+              "unit1/conclusion"
+            ]
+          },
+          {
+            "group": "Unit 2: Frameworks for AI Agents",
+            "pages": [
+              "unit2/introduction"
+            ]
+          },
+          {
+            "group": "Unit 2.1: smolagents",
+            "pages": [
+              "unit2/smolagents/introduction",
+              "unit2/smolagents/why_use_smolagents",
+              "unit2/smolagents/code_agents",
+              "unit2/smolagents/tool_calling_agents",
+              "unit2/smolagents/tools",
+              "unit2/smolagents/retrieval_agents",
+              "unit2/smolagents/multi_agent_systems",
+              "unit2/smolagents/vision_agents",
+              "unit2/smolagents/conclusion"
+            ]
+          },
+          {
+            "group": "Unit 2.2: LlamaIndex",
+            "pages": [
+              "unit2/llama-index/introduction",
+              "unit2/llama-index/llama-hub",
+              "unit2/llama-index/components",
+              "unit2/llama-index/tools",
+              "unit2/llama-index/agents",
+              "unit2/llama-index/workflows",
+              "unit2/llama-index/conclusion"
+            ]
+          },
+          {
+            "group": "Unit 2.3: LangGraph",
+            "pages": [
+              "unit2/langgraph/introduction",
+              "unit2/langgraph/when_to_use_langgraph",
+              "unit2/langgraph/building_blocks",
+              "unit2/langgraph/first_graph",
+              "unit2/langgraph/document_analysis_agent",
+              "unit2/langgraph/conclusion"
+            ]
+          },
+          {
+            "group": "Unit 3: Agentic RAG",
+            "pages": [
+              "unit3/agentic-rag/introduction",
+              "unit3/agentic-rag/agentic-rag",
+              "unit3/agentic-rag/invitees",
+              "unit3/agentic-rag/tools",
+              "unit3/agentic-rag/agent",
+              "unit3/agentic-rag/conclusion"
+            ]
+          },
+          {
+            "group": "Unit 4: Final Project",
+            "pages": [
+              "unit4/introduction",
+              "unit4/what-is-gaia",
+              "unit4/hands-on",
+              "unit4/get-your-certificate",
+              "unit4/conclusion",
+              "unit4/additional-readings"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Bonus Units",
+        "groups": [
+          {
+            "group": "Bonus Unit 1: Fine-tuning for Function Calling",
+            "pages": [
+              "bonus-unit1/introduction",
+              "bonus-unit1/what-is-function-calling",
+              "bonus-unit1/fine-tuning",
+              "bonus-unit1/conclusion"
+            ]
+          },
+          {
+            "group": "Bonus Unit 2: Observability & Evaluation",
+            "pages": [
+              "bonus-unit2/introduction",
+              "bonus-unit2/what-is-agent-observability-and-evaluation",
+              "bonus-unit2/monitoring-and-evaluating-agents-notebook",
+              "bonus-unit2/quiz"
+            ]
+          },
+          {
+            "group": "Bonus Unit 3: Agents in Games",
+            "pages": [
+              "bonus-unit3/introduction",
+              "bonus-unit3/state-of-art",
+              "bonus-unit3/from-llm-to-agents",
+              "bonus-unit3/building_your_pokemon_agent",
+              "bonus-unit3/launching_agent_battle",
+              "bonus-unit3/conclusion"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Structured curriculum from beginner to expert in AI agents",
+    "Hands-on tutorials using smolagents, LangGraph, and LlamaIndex",
+    "Free certification process with fundamentals and completion certificates",
+    "Agentic RAG use case with real-world application",
+    "Multi-agent systems and vision agent coverage",
+    "Final project with GAIA benchmark evaluation and student leaderboard",
+    "Bonus units covering fine-tuning, observability, and game agents",
+    "Multilingual content (English, French, Spanish, Chinese, Korean, Russian, Vietnamese)"
+  ],
+  "publicApiSurface": [
+    "smolagents - lightweight framework for building capable AI agents",
+    "LlamaIndex - LLM-powered agents over data using indexes and workflows",
+    "LangGraph - production-ready agent applications with flow control",
+    "CodeAgent - agents that write and execute code actions",
+    "ToolCallingAgent - agents using JSON blob tool calls",
+    "MultiAgentSystem - orchestration of multiple agents",
+    "RetrievalAgent - agents augmented with vector search",
+    "AgenticRAG - retrieval augmented generation with agent reasoning",
+    "GAIA benchmark - evaluation framework for final project assessment"
+  ]
+}
