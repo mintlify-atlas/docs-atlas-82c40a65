@@ -1,0 +1,58 @@
+---
+title: "Fine-tuning your model for function calling"
+description: "Learn how to fine-tune a model for function calling using LoRA, starting from google/gemma-2-2b-it as your base."
+---
+
+You're now ready to fine-tune your first model for function calling.
+
+## How do you train a model for function calling?
+
+The answer is: you need **data**.
+
+A model training process has three steps:
+
+<Steps>
+  <Step title="Pre-training">
+    The model is pre-trained on a large quantity of data. The output is a **pre-trained model** — for example, [google/gemma-2-2b](https://huggingface.co/google/gemma-2-2b). This is a base model that can only predict the next token without strong instruction-following capabilities.
+  </Step>
+  <Step title="Fine-tuning for instruction following">
+    To be useful in a chat context, the model is fine-tuned to follow instructions. This step can be performed by model creators, the open-source community, or you. For example, [google/gemma-2-2b-it](https://huggingface.co/google/gemma-2-2b-it) is an instruction-tuned model created by the Google Gemma team.
+  </Step>
+  <Step title="Alignment">
+    The model can then be aligned to the creator's preferences. For example, a customer service chatbot that must never be impolite.
+  </Step>
+</Steps>
+
+Complete products like Gemini or Mistral go through all three steps. Models on Hugging Face have completed one or more of these training stages.
+
+In this tutorial, you'll build a function-calling model based on [google/gemma-2-2b-it](https://huggingface.co/google/gemma-2-2b-it). The instruction-tuned model is chosen over the base model [google/gemma-2-2b](https://huggingface.co/google/gemma-2-2b) because it already handles instruction following — starting from the base model would require learning instruction following, chat, **and** function calling from scratch.
+
+By starting from the instruction-tuned model, **you minimize the amount of information your model needs to learn**.
+
+## LoRA (Low-Rank Adaptation of Large Language Models)
+
+LoRA is a popular and lightweight training technique that significantly **reduces the number of trainable parameters**.
+
+It works by **inserting a smaller number of new weights as an adapter into the model**. This makes training with LoRA much faster, memory-efficient, and produces smaller model weights (a few hundred MBs) that are easier to store and share.
+
+![LoRA inference](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/blog_multi-lora-serving_LoRA.gif)
+
+LoRA works by adding pairs of rank decomposition matrices to transformer layers, typically focusing on linear layers. During training, the rest of the model is "frozen" and only the adapter weights are updated.
+
+This means the number of **parameters** you need to train drops considerably — you only update the adapter's weights.
+
+During inference, the input passes through both the adapter and the base model. Alternatively, the adapter weights can be merged with the base model, resulting in no additional latency overhead.
+
+<Tip>
+  LoRA is particularly useful for adapting **large** language models to specific tasks or domains while keeping resource requirements manageable.
+</Tip>
+
+To learn more about how LoRA works, check out this [tutorial](https://huggingface.co/learn/nlp-course/chapter11/4?fw=pt).
+
+## Fine-tuning a model for function calling
+
+You can access the tutorial notebook [here](https://huggingface.co/agents-course/notebooks/blob/main/bonus-unit1/bonus-unit1.ipynb).
+
+Click the button below to open and run it in Google Colab:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/#fileId=https://huggingface.co/agents-course/notebooks/blob/main/bonus-unit1/bonus-unit1.ipynb)

@@ -1,0 +1,110 @@
+---
+title: Onboarding — your first steps
+description: Set up your Hugging Face account, join the Discord community, follow the course organization, and configure a local model fallback with Ollama.
+---
+
+<img
+  src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit0/time-to-onboard.jpg"
+  alt="Time to onboard"
+/>
+
+Now that you have all the details, let's get started. You'll complete four setup tasks and an optional local model configuration.
+
+<Steps>
+  <Step title="Create your Hugging Face account">
+    If you haven't already, create a Hugging Face account at [huggingface.co/join](https://huggingface.co/join). It's free and required for pushing models, loading agents, and creating Spaces throughout the course.
+  </Step>
+
+  <Step title="Join the Discord community">
+    [Join the Hugging Face Discord server](https://discord.gg/UrrTSsSyjb) and introduce yourself in the `#introduce-yourself` channel.
+
+    For all course-related questions and discussions, visit the `courses` channel under **Hugging Face Hub**.
+
+    <Tip>
+      If this is your first time using Discord, read the [Discord 101 guide](/unit0/discord101) for tips on navigating the server effectively.
+    </Tip>
+  </Step>
+
+  <Step title="Follow the Hugging Face Agents Course organization">
+    Stay up to date with the latest course materials, updates, and announcements by following the course organization on the Hub.
+
+    Go to [huggingface.co/agents-course](https://huggingface.co/agents-course) and click **Follow**.
+
+    <img
+      src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/communication/hf_course_follow.gif"
+      alt="Animated demonstration of clicking the Follow button on the agents-course organization page"
+    />
+  </Step>
+
+  <Step title="Spread the word">
+    Help make this course more visible:
+
+    - Star [the course repository on GitHub](https://github.com/huggingface/agents-course) to show your support.
+
+    <img
+      src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/communication/please_star.gif"
+      alt="Animated demonstration of starring the GitHub repository"
+    />
+
+    - Share your learning journey on social media. Download the share image [here](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/communication/share.png?download=true) and let others know you're taking the course.
+
+    <img
+      src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/communication/share.png"
+      alt="Share image for the AI Agents Course"
+    />
+  </Step>
+</Steps>
+
+## Running models locally with Ollama
+
+If you hit API credit limits during the course, you can run models locally using [Ollama](https://ollama.com/download) as a drop-in replacement.
+
+<Steps>
+  <Step title="Install Ollama">
+    Follow the official installation instructions at [ollama.com/download](https://ollama.com/download).
+  </Step>
+
+  <Step title="Pull a model locally">
+    ```bash
+    ollama pull qwen2:7b
+    ```
+
+    This pulls the [qwen2:7b model](https://ollama.com/library/qwen2:7b). Browse [ollama.com/search](https://ollama.com/search) for additional models.
+  </Step>
+
+  <Step title="Start Ollama in the background">
+    In a dedicated terminal, run:
+
+    ```bash
+    ollama serve
+    ```
+
+    <Note>
+      If you see the error `listen tcp 127.0.0.1:11434: bind: address already in use`, run `sudo lsof -i :11434` to find the process using that port. If it's already `ollama`, the installation script started the service automatically and you can skip this step.
+    </Note>
+  </Step>
+
+  <Step title="Switch to LiteLLMModel in smolagents">
+    Install the `litellm` extra for smolagents:
+
+    ```bash
+    pip install 'smolagents[litellm]'
+    ```
+
+    Then replace `InferenceClientModel` with `LiteLLMModel` in your code:
+
+    ```python
+    from smolagents import LiteLLMModel
+
+    model = LiteLLMModel(
+        model_id="ollama_chat/qwen2:7b",  # or another Ollama-supported model
+        api_base="http://127.0.0.1:11434",  # default Ollama local server
+        num_ctx=8192,
+    )
+    ```
+
+    Ollama serves models using an OpenAI-compatible API, so `LiteLLMModel` connects to it seamlessly — no other code changes required.
+  </Step>
+</Steps>
+
+Congratulations! You've completed the onboarding process and are ready to start learning about AI agents.

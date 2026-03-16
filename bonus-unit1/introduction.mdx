@@ -1,0 +1,57 @@
+---
+title: "Introduction to bonus unit 1"
+description: "Learn to fine-tune a Large Language Model for function calling using LoRA and the Thought → Act → Observe cycle."
+---
+
+![Bonus Unit 1 Thumbnail](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/bonus-unit1/thumbnail.jpg)
+
+Welcome to the first **Bonus Unit**, where you'll learn to **fine-tune a Large Language Model (LLM) for function calling**.
+
+Function calling is quickly becoming a must-know technique for LLMs. Rather than relying only on prompt-based approaches like in Unit 1, function calling trains your model to **take actions and interpret observations during the training phase**, making your AI more robust.
+
+<Note>
+  **When should you do this bonus unit?**
+
+  This section is **optional** and more advanced than Unit 1, so don't hesitate to either do it now or revisit it once your knowledge has improved. This bonus unit is designed to be self-contained — it walks you through every core concept of fine-tuning a model for function calling even if you haven't yet learned the inner workings of fine-tuning.
+</Note>
+
+The best way to follow this bonus unit is to:
+
+<Steps>
+  <Step title="Know how to fine-tune an LLM with Transformers">
+    If you're not already familiar, [check this guide](https://huggingface.co/learn/nlp-course/chapter3/1?fw=pt) from the Hugging Face NLP course.
+  </Step>
+  <Step title="Know how to use SFTTrainer">
+    To learn how to use `SFTTrainer` to fine-tune a model, [check this documentation](https://huggingface.co/learn/nlp-course/en/chapter11/1).
+  </Step>
+</Steps>
+
+## What you'll learn
+
+<CardGroup cols={2}>
+  <Card title="Function calling" icon="phone">
+    How modern LLMs structure their conversations to effectively trigger **tools**.
+  </Card>
+  <Card title="LoRA (Low-Rank Adaptation)" icon="microchip">
+    A **lightweight and efficient** fine-tuning method that cuts down on computational and storage overhead — making training large models faster, cheaper, and easier to deploy.
+  </Card>
+  <Card title="Thought → Act → Observe cycle" icon="rotate">
+    A simple but powerful approach for structuring how your model decides when and how to call functions, track intermediate steps, and interpret results from external tools or APIs.
+  </Card>
+  <Card title="New special tokens" icon="code">
+    Special markers that help the model distinguish between internal chain-of-thought reasoning, outgoing function calls, and responses coming back from external tools.
+  </Card>
+</CardGroup>
+
+## What you'll be able to do
+
+By the end of this bonus unit, you'll be able to:
+
+- **Understand** the inner workings of APIs when it comes to tools
+- **Fine-tune** a model using the LoRA technique
+- **Implement and modify** the Thought → Act → Observe cycle to create robust, maintainable function-calling workflows
+- **Design and utilize** special tokens to separate the model's internal reasoning from its external actions
+
+And you'll **have fine-tuned your own model to do function calling**.
+
+Let's dive into function calling!

@@ -1,0 +1,69 @@
+---
+title: "Introduction to smolagents"
+description: "Learn how to build effective AI agents using the smolagents library — a lightweight Hugging Face framework for creating capable, code-first agents."
+---
+
+![Unit 2.1 thumbnail](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/smolagents/thumbnail.jpg)
+
+Welcome to this module, where you'll learn **how to build effective agents** using the [`smolagents`](https://github.com/huggingface/smolagents) library — a lightweight framework for creating capable AI agents.
+
+`smolagents` is a Hugging Face library. You can support the project by starring the [smolagents repository](https://github.com/huggingface/smolagents).
+
+![Starring smolagents](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/smolagents/star_smolagents.gif)
+
+## Module overview
+
+This module provides a comprehensive overview of key concepts and practical strategies for building intelligent agents using `smolagents`.
+
+With so many open-source frameworks available, it's essential to understand the components and capabilities that make `smolagents` a useful option, or to determine when another solution might be a better fit.
+
+You'll explore critical agent types, including:
+
+- **Code agents** designed for software development tasks
+- **Tool calling agents** for creating modular, function-driven workflows
+- **Retrieval agents** that access and synthesize information
+
+You'll also cover the orchestration of multiple agents, as well as the integration of vision capabilities and web browsing, which unlock new possibilities for dynamic and context-aware applications.
+
+In this unit, Alfred — the agent from Unit 1 — makes his return, this time using the `smolagents` framework. Alfred is organizing a party at Wayne Manor while the Wayne family is away, and he has plenty to do. You'll follow his journey as he handles these tasks with `smolagents`.
+
+<Tip>
+  In this unit, you will learn to build AI agents with the `smolagents` library. Your agents will be able to search for data, execute code, and interact with web pages. You will also learn how to combine multiple agents to create more powerful systems.
+</Tip>
+
+![Alfred the agent](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/this-is-alfred.jpg)
+
+## Contents
+
+<CardGroup cols={2}>
+  <Card title="Why use smolagents" icon="circle-question" href="/unit2/smolagents/why_use_smolagents">
+    Understand the advantages and drawbacks of `smolagents` to make an informed choice for your project.
+  </Card>
+  <Card title="Code agents" icon="code" href="/unit2/smolagents/code_agents">
+    Explore `CodeAgents` — the primary agent type — which produce Python code to perform actions.
+  </Card>
+  <Card title="Tool calling agents" icon="wrench" href="/unit2/smolagents/tool_calling_agents">
+    Learn about `ToolCallingAgents`, which generate JSON/text blobs instead of code to call tools.
+  </Card>
+  <Card title="Tools" icon="toolbox" href="/unit2/smolagents/tools">
+    Create tools using the `@tool` decorator or `Tool` class, and share them with the community.
+  </Card>
+  <Card title="Retrieval agents" icon="magnifying-glass" href="/unit2/smolagents/retrieval_agents">
+    Build agents that implement Retrieval-Augmented Generation (RAG) patterns over knowledge bases.
+  </Card>
+  <Card title="Multi-agent systems" icon="sitemap" href="/unit2/smolagents/multi_agent_systems">
+    Orchestrate multiple specialized agents to solve complex tasks collaboratively.
+  </Card>
+  <Card title="Vision and browser agents" icon="eye" href="/unit2/smolagents/vision_agents">
+    Integrate Vision-Language Models to enable image-based reasoning and web browsing.
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [smolagents documentation](https://huggingface.co/docs/smolagents) — Official docs for the smolagents library
+- [Building effective agents](https://www.anthropic.com/research/building-effective-agents) — Research on agent architectures
+- [Agent guidelines](https://huggingface.co/docs/smolagents/tutorials/building_good_agents) — Best practices for building reliable agents
+- [LangGraph agents](https://langchain-ai.github.io/langgraph/) — Additional examples of agent implementations
+- [Function calling guide](https://platform.openai.com/docs/guides/function-calling) — Understanding function calling in LLMs
+- [RAG best practices](https://www.pinecone.io/learn/retrieval-augmented-generation/) — Guide to implementing effective RAG

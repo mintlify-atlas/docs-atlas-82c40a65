@@ -1,0 +1,43 @@
+---
+title: "From LLMs to AI agents"
+description: "Understand how agentic AI goes beyond LLMs to enable autonomous decision-making in games, and why turn-based games are the ideal starting point."
+---
+
+As covered in the [first unit](https://huggingface.co/learn/agents-course/unit1/introduction) of this course, AI agents are able to plan and make decisions. While LLMs have enabled more natural interactions with NPCs, agentic AI takes it a step further by allowing characters to make decisions, plan actions, and adapt to changing environments.
+
+To illustrate the difference, think of a classic RPG NPC:
+
+<CardGroup cols={2}>
+  <Card title="With an LLM" icon="comment">
+    The NPC might respond to your questions in a more natural, varied way. It's great for dialogue, but the NPC remains static — it won't act unless you do something first.
+  </Card>
+  <Card title="With agentic AI" icon="robot">
+    The NPC can decide to go look for help, set a trap, or avoid you completely — even if you're not interacting with it directly.
+  </Card>
+</CardGroup>
+
+This small shift changes everything. We're moving from scripted responders to **autonomous actors** within the game world.
+
+Agentic AI empowers NPCs with:
+
+- **Autonomy** — making independent decisions based on the game state
+- **Adaptability** — adjusting strategies in response to player actions
+- **Persistence** — remembering past interactions to inform future behavior
+
+This transforms NPCs from reactive entities into proactive participants in the game world, opening the door to innovative gameplay.
+
+## The big limitation of agents: speed
+
+Despite its potential, agentic AI currently faces challenges in real-time applications. The reasoning and planning processes can introduce latency, making it less suitable for fast-paced games like *Doom* or *Super Mario Bros.*
+
+Take the example of [*Claude Plays Pokémon*](https://www.twitch.tv/claudeplayspokemon). If you consider the number of tokens needed to **think**, plus the tokens needed to **act**, it becomes clear that entirely different decoding strategies would be needed to make real-time play feasible.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/bonus-unit3/claude-plays-pokemon.png" alt="Claude plays Pokémon" />
+
+Most games need to run at around 30 FPS, which means a real-time AI agent would need to act 30 times per second — not currently feasible with today's agentic LLMs.
+
+<Note>
+  Turn-based games like *Pokémon* are ideal candidates for agentic AI, as they allow the AI enough time to deliberate and make strategic decisions.
+</Note>
+
+That's why in the next section, you'll build your own AI agent to battle in Pokémon-style turn-based combat and challenge it yourself.

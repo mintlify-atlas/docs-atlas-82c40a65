@@ -1,0 +1,130 @@
+---
+title: "What is agent observability and evaluation?"
+description: "Learn the concepts of observability, key metrics to monitor, and the difference between online and offline evaluation for AI agents."
+---
+
+## What is observability?
+
+Observability is about understanding what's happening inside your AI agent by looking at external signals like logs, metrics, and traces. For AI agents, this means tracking actions, tool usage, model calls, and responses to debug and improve agent performance.
+
+![Observability dashboard](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/bonus-unit2/langfuse-dashboard.png)
+
+## Why agent observability matters
+
+Without observability, AI agents are "black boxes." Observability tools make agents transparent, enabling you to:
+
+- Understand costs and accuracy trade-offs
+- Measure latency
+- Detect harmful language and prompt injection
+- Monitor user feedback
+
+In other words, it transforms your demo agent into something ready for production.
+
+## Observability tools
+
+Common observability tools for AI agents include platforms like [Langfuse](https://langfuse.com) and [Arize](https://www.arize.com). These tools collect detailed traces and offer dashboards to monitor metrics in real time, making it easy to detect problems and optimize performance.
+
+Observability tools vary widely in their features and capabilities:
+
+- Some are open source with large communities and extensive integrations
+- Some specialize in specific aspects of LLMOps (observability, evaluations, or prompt management)
+- Others are designed to cover the entire LLMOps workflow
+
+Many agent frameworks such as [smolagents](https://huggingface.co/docs/smolagents/v1.12.0/en/index) use the [OpenTelemetry](https://opentelemetry.io/docs/) standard to expose metadata to observability tools. Check the documentation of the tool you're using to see what is supported.
+
+## Traces and spans
+
+Observability tools represent agent runs as **traces** and **spans**:
+
+- **Traces** represent a complete agent task from start to finish (like handling a user query)
+- **Spans** are individual steps within the trace (like calling a language model or retrieving data)
+
+![Example of a smolagent trace in Langfuse](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/bonus-unit2/trace-tree.png)
+
+## Key metrics to monitor
+
+<Accordion title="Latency">
+  How quickly does the agent respond? Long waiting times negatively impact user experience. Measure latency for tasks and individual steps by tracing agent runs. For example, an agent that takes 20 seconds for all model calls could be accelerated by using a faster model or by running model calls in parallel.
+</Accordion>
+
+<Accordion title="Costs">
+  What's the expense per agent run? AI agents rely on LLM calls billed per token or external APIs. Frequent tool usage or multiple prompts can rapidly increase costs. Real-time monitoring can also help identify unexpected spikes caused by bugs that trigger excessive API loops.
+</Accordion>
+
+<Accordion title="Request errors">
+  How many requests did the agent fail? This includes API errors or failed tool calls. To make your agent more robust in production, you can set up fallbacks or retries — for example, switching to LLM provider B if provider A is down.
+</Accordion>
+
+<Accordion title="User feedback">
+  Implementing direct user evaluations provides valuable insights. This can include explicit ratings (thumbs up/down, 1–5 stars) or textual comments. Consistent negative feedback signals that the agent is not working as expected.
+</Accordion>
+
+<Accordion title="Implicit user feedback">
+  User behaviors provide indirect feedback even without explicit ratings — for example, immediately rephrasing a question, making repeated queries, or clicking a retry button. If you see users repeatedly asking the same question, the agent is likely not working as expected.
+</Accordion>
+
+<Accordion title="Accuracy">
+  How frequently does the agent produce correct or desirable outputs? Accuracy definitions vary (e.g., problem-solving correctness, information retrieval accuracy, user satisfaction). Define what success looks like for your agent and track it via automated checks, evaluation scores, or task completion labels.
+</Accordion>
+
+<Accordion title="Automated evaluation metrics">
+  You can set up automated evals using an LLM to score the agent's output for helpfulness, accuracy, or other criteria. Open source libraries like [RAGAS](https://docs.ragas.io/) (for RAG agents) and [LLM Guard](https://llm-guard.com/) (to detect harmful language or prompt injection) can help here.
+</Accordion>
+
+<Note>
+  In practice, a combination of these metrics gives the best coverage of an AI agent's health.
+</Note>
+
+## Evaluating AI agents
+
+Observability gives you metrics, but **evaluation** is the process of analyzing that data (and performing tests) to determine how well an AI agent is performing and how it can be improved.
+
+Regular evaluation is important because AI agents are often non-deterministic and can evolve through updates or drifting model behavior. There are two categories of evaluations: **online evaluation** and **offline evaluation**. Both are valuable and complement each other. You should generally begin with offline evaluation, as it is the minimum necessary step before deploying any agent.
+
+### Offline evaluation
+
+![Dataset items in Langfuse](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/bonus-unit2/example-dataset.png)
+
+Offline evaluation involves assessing the agent in a controlled setting, typically using test datasets rather than live user queries. You use curated datasets where you know the expected output or correct behavior, then run your agent against them.
+
+For instance, if you built a math word-problem agent, you might use a [test dataset](https://huggingface.co/datasets/gsm8k) of 100 problems with known answers. Offline evaluation is often done during development and can be part of CI/CD pipelines to check improvements or guard against regressions.
+
+**Key benefit:** It's repeatable and provides clear accuracy metrics since you have ground truth.
+
+**Key challenge:** Ensuring your test dataset is comprehensive and stays relevant. The agent might perform well on a fixed test set but encounter very different queries in production. Keep test sets updated with new edge cases that reflect real-world scenarios.
+
+### Online evaluation
+
+Online evaluation means assessing the agent in a live, real-world environment during actual usage in production. It involves monitoring the agent's performance on real user interactions and analyzing outcomes continuously.
+
+For example, you might track success rates, user satisfaction scores, or other metrics on live traffic.
+
+**Key benefit:** It captures things you might not anticipate in a lab setting — you can observe model drift over time and catch unexpected queries that weren't in your test data.
+
+**Key challenge:** Getting reliable labels or scores for live interactions can be tricky — you may need to rely on user feedback or downstream metrics.
+
+### Combining the two
+
+In practice, successful AI agent evaluation blends **online** and **offline** methods. Many teams adopt a continuous loop:
+
+<Steps>
+  <Step title="Offline evaluation">
+    Run benchmarks to quantitatively score your agent on defined tasks.
+  </Step>
+  <Step title="Deploy the new agent version">
+    Ship the updated agent to production.
+  </Step>
+  <Step title="Monitor online metrics">
+    Collect new failure examples from live traffic.
+  </Step>
+  <Step title="Expand the offline test set">
+    Add the new failure examples to your offline test set.
+  </Step>
+  <Step title="Iterate">
+    Repeat the loop continuously.
+  </Step>
+</Steps>
+
+## What's next?
+
+In the next section, you'll see examples of how to use observability tools to monitor and evaluate your agent in practice.

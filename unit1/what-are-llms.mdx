@@ -1,0 +1,182 @@
+---
+title: What are LLMs?
+description: Understand Large Language Models, how they generate text via next-token prediction, and how they power AI agents.
+---
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/whiteboard-check-1.jpg" alt="Unit 1 planning whiteboard" />
+
+In the previous section you learned that each agent needs **an AI model at its core**, and that LLMs are the most common type of AI model for this purpose.
+
+This section offers a concise technical explanation of LLMs. If you want to dive deeper, check out the [free Natural Language Processing Course](https://huggingface.co/learn/nlp-course/chapter1/1).
+
+## What is a Large Language Model?
+
+An LLM is a type of AI model that excels at **understanding and generating human language**. They are trained on vast amounts of text data, allowing them to learn patterns, structure, and even nuance in language. These models typically consist of many millions of parameters.
+
+Most LLMs today are **built on the Transformer architecture**—a deep learning architecture based on the "Attention" algorithm, which gained significant interest since Google released BERT in 2018.
+
+<figure>
+  <img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/transformer.jpg" alt="The original Transformer architecture" />
+  <figcaption>The original Transformer architecture, with an encoder on the left and a decoder on the right.</figcaption>
+</figure>
+
+There are three types of transformers:
+
+<AccordionGroup>
+  <Accordion title="Encoders">
+    An encoder-based transformer takes text (or other data) as input and outputs a dense representation (or embedding) of that text.
+
+    - **Example:** BERT from Google
+    - **Use cases:** Text classification, semantic search, Named Entity Recognition
+    - **Typical size:** Millions of parameters
+  </Accordion>
+  <Accordion title="Decoders">
+    A decoder-based transformer focuses **on generating new tokens to complete a sequence, one token at a time**.
+
+    - **Example:** Llama from Meta
+    - **Use cases:** Text generation, chatbots, code generation
+    - **Typical size:** Billions of parameters
+  </Accordion>
+  <Accordion title="Seq2Seq (Encoder–Decoder)">
+    A sequence-to-sequence transformer _combines_ an encoder and a decoder. The encoder first processes the input sequence into a context representation, then the decoder generates an output sequence.
+
+    - **Example:** T5, BART
+    - **Use cases:** Translation, summarization, paraphrasing
+    - **Typical size:** Millions of parameters
+  </Accordion>
+</AccordionGroup>
+
+Although LLMs come in various forms, they are typically decoder-based models with billions of parameters. Here are some well-known LLMs:
+
+| Model | Provider |
+|---|---|
+| **Deepseek-R1** | DeepSeek |
+| **GPT4** | OpenAI |
+| **Llama 3** | Meta (Facebook AI Research) |
+| **SmolLM2** | Hugging Face |
+| **Gemma** | Google |
+| **Mistral** | Mistral |
+
+## How LLMs predict the next token
+
+The underlying principle of an LLM is simple yet highly effective: **its objective is to predict the next token, given a sequence of previous tokens**. A "token" is the unit of information an LLM works with. You can think of a token as roughly equivalent to a word, but for efficiency reasons LLMs don't use whole words.
+
+For example, while English has an estimated 600,000 words, an LLM might have a vocabulary of around 32,000 tokens (as is the case with Llama 2). Tokenization often works on sub-word units that can be combined. For instance, the tokens "interest" and "ing" combine to form "interesting", or "ed" can be appended to form "interested".
+
+You can experiment with different tokenizers in the interactive playground below:
+
+<iframe
+  src="https://agents-course-the-tokenizer-playground.static.hf.space"
+  frameborder="0"
+  width="850"
+  height="450"
+></iframe>
+
+## Special tokens
+
+Each LLM has **special tokens** specific to the model. The LLM uses these tokens to open and close the structured components of its generation—for example, to indicate the start or end of a sequence, message, or response. The most important of these is the **End of Sequence token** (EOS).
+
+The forms of special tokens are highly diverse across model providers:
+
+| Model | Provider | EOS token | Functionality |
+|---|---|---|---|
+| **GPT4** | OpenAI | `<\|endoftext\|>` | End of message text |
+| **Llama 3** | Meta | `<\|eot_id\|>` | End of sequence |
+| **Deepseek-R1** | DeepSeek | `<\|end_of_sentence\|>` | End of message text |
+| **SmolLM2** | Hugging Face | `<\|im_end\|>` | End of instruction or message |
+| **Gemma** | Google | `<end_of_turn>` | End of conversation turn |
+
+<Tip>
+  You don't need to memorize these special tokens, but it's important to appreciate their diversity and the role they play in LLM text generation. If you want to know more, you can check the configuration of any model in its Hub repository—for example, the [tokenizer_config.json](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct/blob/main/tokenizer_config.json) for SmolLM2.
+</Tip>
+
+## Autoregressive decoding
+
+LLMs are **autoregressive**, meaning that **the output from one pass becomes the input for the next one**. This loop continues until the model predicts the EOS token, at which point generation stops.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/AutoregressionSchema.gif" alt="Visual diagram of autoregressive decoding" width="60%" />
+
+During a single decoding step:
+
+1. The input text is **tokenized** and the model computes a representation of the sequence, capturing meaning and position of each token.
+2. This representation goes into the model, which outputs scores that rank the likelihood of each token in its vocabulary as being the next one in the sequence.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/DecodingFinal.gif" alt="Visual diagram of decoding" width="60%" />
+
+Based on these scores, there are multiple strategies to select the next token:
+
+- The simplest strategy is to always take the token with the maximum score.
+- More advanced strategies like _beam search_ explore multiple candidate sequences to find the one with the maximum total score—even if some individual tokens have lower scores.
+
+You can interact with the decoding process using SmolLM2 in this Space (it decodes until reaching the `<|im_end|>` EOS token):
+
+<iframe
+  src="https://agents-course-decoding-visualizer.hf.space"
+  frameborder="0"
+  width="850"
+  height="450"
+></iframe>
+
+You can also explore beam search visually:
+
+<iframe
+  src="https://agents-course-beam-search-visualizer.hf.space"
+  frameborder="0"
+  width="850"
+  height="450"
+></iframe>
+
+## Attention is all you need
+
+A key aspect of the Transformer architecture is **Attention**. When predicting the next word, not every word in a sentence is equally important—words like "France" and "capital" in the sentence *"The capital of France is ..."* carry the most meaning.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/AttentionSceneFinal.gif" alt="Visual diagram of attention" width="60%" />
+
+Although the basic principle of LLMs—predicting the next token—has remained consistent since GPT-2, there have been significant advancements in scaling neural networks and making the attention mechanism work for longer and longer sequences.
+
+If you've interacted with LLMs, you're probably familiar with the term *context length*, which refers to the maximum number of tokens the LLM can process—its maximum _attention span_.
+
+## Why prompting matters
+
+Considering that the only job of an LLM is to predict the next token by looking at every input token and choosing which tokens are "important", the wording of your input sequence is very important.
+
+The input sequence you provide to an LLM is called a _prompt_. Careful design of the prompt makes it easier **to guide the generation of the LLM toward the desired output**.
+
+## How LLMs are trained
+
+LLMs are trained on large datasets of text, where they learn to predict the next word in a sequence through a self-supervised or masked language modeling objective.
+
+From this unsupervised learning, the model learns the structure of the language and **underlying patterns in text, allowing the model to generalize to unseen data**.
+
+After this initial _pre-training_, LLMs can be fine-tuned on a supervised learning objective to perform specific tasks. For example, some models are trained for conversational structures or tool usage, while others focus on classification or code generation.
+
+## How to use LLMs
+
+You have two main options:
+
+<CardGroup cols={2}>
+  <Card title="Run locally" icon="computer">
+    Run the model on your own hardware, if you have sufficient compute resources.
+  </Card>
+  <Card title="Use a cloud API" icon="cloud">
+    Access models via the Hugging Face Serverless Inference API or other providers.
+  </Card>
+</CardGroup>
+
+Throughout this course, you'll primarily use models via APIs on the Hugging Face Hub. Later units will explore running models locally.
+
+## How LLMs power AI agents
+
+LLMs are a key component of AI agents, **providing the foundation for understanding and generating human language**.
+
+They can interpret user instructions, maintain context in conversations, define a plan, and decide which tools to use. The LLM is **the brain of the agent**.
+
+---
+
+Now that you understand how LLMs work, it's time to see **how LLMs structure their generations in a conversational context**.
+
+<Note>
+  To run the [course notebook](https://huggingface.co/agents-course/notebooks/blob/main/unit1/dummy_agent_library.ipynb), you need a Hugging Face token from [https://hf.co/settings/tokens](https://hf.co/settings/tokens). You also need to request access to [Meta Llama models](https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct).
+
+  For more information on running Jupyter Notebooks, see [Jupyter Notebooks on the Hugging Face Hub](https://huggingface.co/docs/hub/notebooks).
+</Note>

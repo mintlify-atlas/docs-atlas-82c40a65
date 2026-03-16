@@ -1,0 +1,123 @@
+---
+title: Agent steps and structure
+description: Explore the complete AI agent workflow—the Thought-Action-Observation cycle—through a worked example with Alfred the weather agent.
+---
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/whiteboard-check-3.jpg" alt="Unit 1 planning whiteboard" />
+
+In the previous sections, you learned:
+
+- **How tools are made available to the agent in the system prompt**
+- **How AI agents are systems that can reason, plan, and interact with their environment**
+
+In this section, you'll explore the complete AI agent workflow—a cycle defined as **Thought-Action-Observation**—and then dive deeper into each of these steps.
+
+## The core components
+
+Agents work in a continuous cycle of: **thinking (Thought) → acting (Act) → observing (Observe)**.
+
+Breaking down each component:
+
+1. **Thought:** The LLM part of the agent decides what the next step should be.
+2. **Action:** The agent takes an action by calling the tools with the associated arguments.
+3. **Observation:** The model reflects on the response from the tool.
+
+## The Thought-Action-Observation cycle
+
+The three components work together in a continuous loop. To use a programming analogy, the agent uses a **while loop**: the loop continues until the agent's objective has been fulfilled.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/AgentCycle.gif" alt="Think, Act, Observe cycle" />
+
+In many agent frameworks, **the rules and guidelines are embedded directly into the system prompt**, ensuring that every cycle adheres to a defined logic.
+
+In a simplified version, the system prompt may look like this:
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/system_prompt_cycle.png" alt="System prompt showing the Think-Act-Observe cycle" />
+
+The system message defines:
+
+- The *agent's behavior*
+- The *tools the agent has access to*, as described in the previous section
+- The *Thought-Action-Observation cycle*, baked into the LLM instructions
+
+## Alfred, the weather agent
+
+To understand the process, let's walk through a complete example.
+
+A user asks Alfred: "What's the current weather in New York?"
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/alfred-agent.jpg" alt="Alfred the weather agent" />
+
+Alfred's job is to answer this query using a weather API tool. Here's how the cycle unfolds:
+
+<Steps>
+  <Step title="Thought">
+    Upon receiving the query, Alfred's internal reasoning is:
+
+    *"The user needs current weather information for New York. I have access to a tool that fetches weather data. First, I need to call the weather API to get up-to-date details."*
+
+    This step shows the agent breaking the problem into steps: first, gathering the necessary data.
+
+    <img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/alfred-agent-1.jpg" alt="Alfred reasoning" />
+  </Step>
+  <Step title="Action">
+    Based on its reasoning and knowledge of the `get_weather` tool, Alfred prepares a JSON-formatted command:
+
+    Thought: I need to check the current weather for New York.
+
+    ```json
+    {
+      "action": "get_weather",
+      "action_input": {
+        "location": "New York"
+      }
+    }
+    ```
+
+    The action clearly specifies which tool to call (`get_weather`) and what parameter to pass (`"location": "New York"`).
+
+    <img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/alfred-agent-2.jpg" alt="Alfred taking action" />
+  </Step>
+  <Step title="Observation">
+    After the tool call, Alfred receives an observation—the raw weather data from the API:
+
+    *"Current weather in New York: partly cloudy, 15°C, 60% humidity."*
+
+    <img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/alfred-agent-3.jpg" alt="Alfred observing" />
+
+    This observation is added to the prompt as additional context. It functions as real-world feedback, confirming whether the action succeeded and providing the needed details.
+  </Step>
+  <Step title="Updated thought">
+    With the observation in hand, Alfred updates its internal reasoning:
+
+    *"Now that I have the weather data for New York, I can compile an answer for the user."*
+
+    <img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/alfred-agent-4.jpg" alt="Alfred reflecting" />
+  </Step>
+  <Step title="Final action">
+    Alfred generates a final response:
+
+    Thought: I have the weather data now. The current weather in New York is partly cloudy with a temperature of 15°C and 60% humidity.
+
+    Final answer: The current weather in New York is partly cloudy with a temperature of 15°C and 60% humidity.
+
+    <img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/alfred-agent-5.jpg" alt="Alfred giving final answer" />
+  </Step>
+</Steps>
+
+## Key takeaways from this example
+
+**Agents iterate through a loop until the objective is fulfilled.**
+Alfred's process is cyclical. If the observation had indicated an error or incomplete data, Alfred could have re-entered the cycle to correct its approach.
+
+**Tool integration enables real-time data.**
+The ability to call a tool (like a weather API) enables Alfred to go **beyond static knowledge and retrieve real-time data**—an essential aspect of many AI agents.
+
+**Dynamic adaptation.**
+Each cycle allows the agent to incorporate fresh information (observations) into its reasoning (thought), ensuring that the final answer is well-informed and accurate.
+
+This example showcases the core concept behind the *ReAct cycle*: **the interplay of Thought, Action, and Observation empowers AI agents to solve complex tasks iteratively**.
+
+---
+
+Now let's dive deeper into each step of the process, starting with [Thought](/unit1/thoughts).

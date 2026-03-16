@@ -1,0 +1,107 @@
+---
+title: "Quiz: evaluating AI agents"
+description: "Test your understanding of agent tracing, observability metrics, and online vs. offline evaluation."
+---
+
+Let's assess your understanding of the agent tracing and evaluation concepts covered in this bonus unit.
+
+This quiz is optional and ungraded.
+
+### Q1: What does observability in AI agents primarily refer to?
+
+Which statement accurately describes the purpose of observability for AI agents?
+
+<AccordionGroup>
+  <Accordion title="A. It involves tracking internal operations through logs, metrics, and spans to understand agent behavior.">
+    **Correct!** Observability means using logs, metrics, and spans to shed light on the inner workings of the agent.
+  </Accordion>
+  <Accordion title="B. It is solely focused on reducing the financial cost of running the agent.">
+    Observability covers cost but is not limited to it.
+  </Accordion>
+  <Accordion title="C. It refers only to the external appearance and UI of the agent.">
+    Observability is about the internal processes, not the UI.
+  </Accordion>
+  <Accordion title="D. It is concerned with coding style and code aesthetics only.">
+    Code style is unrelated to observability in this context.
+  </Accordion>
+</AccordionGroup>
+
+### Q2: Which of the following is NOT a common metric monitored in agent observability?
+
+Select the metric that does not typically fall under the observability umbrella.
+
+<AccordionGroup>
+  <Accordion title="A. Latency">
+    Latency is commonly tracked to assess agent responsiveness.
+  </Accordion>
+  <Accordion title="B. Cost per agent run">
+    Monitoring cost is a key aspect of observability.
+  </Accordion>
+  <Accordion title="C. User feedback and ratings">
+    User feedback is crucial for evaluating agent performance.
+  </Accordion>
+  <Accordion title="D. Lines of code of the agent">
+    **Correct!** The number of lines of code is not a typical observability metric.
+  </Accordion>
+</AccordionGroup>
+
+### Q3: What best describes offline evaluation of an AI agent?
+
+Determine the statement that correctly captures the essence of offline evaluation.
+
+<AccordionGroup>
+  <Accordion title="A. Evaluating the agent using real user interactions in a live environment.">
+    This describes online evaluation rather than offline.
+  </Accordion>
+  <Accordion title="B. Assessing agent performance using curated datasets with known ground truth.">
+    **Correct!** Offline evaluation uses test datasets to gauge performance against known answers.
+  </Accordion>
+  <Accordion title="C. Monitoring the agent's internal logs in real time.">
+    This is more related to observability rather than evaluation.
+  </Accordion>
+  <Accordion title="D. Running the agent without any evaluation metrics.">
+    This approach does not provide meaningful insights.
+  </Accordion>
+</AccordionGroup>
+
+### Q4: Which advantage does online evaluation of agents offer?
+
+Pick the statement that best reflects the benefit of online evaluation.
+
+<AccordionGroup>
+  <Accordion title="A. It provides controlled testing scenarios using pre-defined datasets.">
+    Controlled testing is a benefit of offline evaluation, not online.
+  </Accordion>
+  <Accordion title="B. It captures live user interactions and real-world performance data.">
+    **Correct!** Online evaluation offers insights by monitoring the agent in a live setting.
+  </Accordion>
+  <Accordion title="C. It eliminates the need for any offline testing and benchmarks.">
+    Both offline and online evaluations are important and complementary.
+  </Accordion>
+  <Accordion title="D. It solely focuses on reducing the computational cost of the agent.">
+    Cost monitoring is part of observability, not the primary advantage of online evaluation.
+  </Accordion>
+</AccordionGroup>
+
+### Q5: What role does OpenTelemetry play in AI agent observability and evaluation?
+
+Which statement best describes the role of OpenTelemetry in monitoring AI agents?
+
+<AccordionGroup>
+  <Accordion title="A. It provides a standardized framework to instrument code, enabling collection of traces, metrics, and logs.">
+    **Correct!** OpenTelemetry standardizes instrumentation for telemetry data, which is crucial for monitoring and diagnosing agent behavior.
+  </Accordion>
+  <Accordion title="B. It acts as a replacement for manual debugging by automatically fixing code issues.">
+    OpenTelemetry is used for gathering telemetry data, not for fixing code issues.
+  </Accordion>
+  <Accordion title="C. It primarily serves as a database for storing historical logs without real-time capabilities.">
+    OpenTelemetry focuses on real-time telemetry data collection and exporting data to analysis tools.
+  </Accordion>
+  <Accordion title="D. It is used to optimize the computational performance of the AI agent by automatically tuning model parameters.">
+    OpenTelemetry is centered on observability rather than performance tuning.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  If you missed any questions, consider reviewing the content of this bonus unit for a deeper understanding. If you did well, you're ready to explore more advanced topics in agent observability and evaluation!
+</Note>

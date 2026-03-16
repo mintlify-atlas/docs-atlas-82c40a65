@@ -1,0 +1,44 @@
+---
+title: 'Agentic Retrieval Augmented Generation (RAG)'
+description: 'Understand how Agentic RAG works and why it is the right approach for giving Alfred dynamic access to information.'
+---
+
+In this unit, you'll see how to use Agentic RAG to help Alfred prepare for the amazing gala.
+
+<Tip>
+  RAG and Agentic RAG were introduced in the previous unit. Feel free to skip ahead if you're already comfortable with the concepts.
+</Tip>
+
+## What is RAG?
+
+LLMs are trained on enormous bodies of data to learn general knowledge. However, a model's world knowledge may not always be relevant or up to date. **RAG solves this problem by finding and retrieving relevant information from your data and forwarding it to the LLM.**
+
+![RAG diagram](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/llama-index/rag.png)
+
+## Why agentic RAG?
+
+Now think about how Alfred works:
+
+1. You've asked Alfred to help plan a gala.
+2. Alfred needs to find the latest news and weather information.
+3. Alfred needs to structure and search the guest information.
+
+Just as Alfred needs to search through your household information to be helpful, any agent needs a way to find and understand relevant data. **Agentic RAG is a powerful way to use agents to answer questions about your data.** You can pass various tools to Alfred to help him answer questions. Instead of answering questions on top of documents automatically, Alfred can decide to use any other tool or flow to answer the question.
+
+![Agentic RAG diagram](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/llama-index/agentic-rag.png)
+
+## What you'll build
+
+Let's start **building the agentic RAG workflow!**
+
+<Steps>
+  <Step title="Create a guest retriever tool">
+    Build a RAG tool to retrieve up-to-date details about the invitees.
+  </Step>
+  <Step title="Add supporting tools">
+    Develop tools for web search, weather updates, and Hugging Face Hub model download statistics.
+  </Step>
+  <Step title="Assemble the agent">
+    Integrate everything to bring the agentic RAG agent to life.
+  </Step>
+</Steps>

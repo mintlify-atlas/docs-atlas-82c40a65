@@ -1,0 +1,97 @@
+---
+title: 'What is GAIA?'
+description: 'An overview of the GAIA benchmark — its design principles, difficulty levels, and why it is one of the most rigorous tests for AI agent systems.'
+---
+
+[GAIA](https://huggingface.co/papers/2311.12983) is a benchmark designed to evaluate AI assistants on real-world tasks that require a combination of core capabilities — such as reasoning, multimodal understanding, web browsing, and proficient tool use.
+
+It was introduced in the paper _[GAIA: A Benchmark for General AI Assistants](https://huggingface.co/papers/2311.12983)_.
+
+The benchmark features **466 carefully curated questions** that are conceptually simple for humans, yet remarkably challenging for current AI systems.
+
+To illustrate the gap between human and AI performance:
+
+| System | Success rate |
+|---|---|
+| Humans | ~92% |
+| GPT-4 with plugins | ~15% |
+| Deep Research (OpenAI) | 67.36% on validation set |
+
+GAIA highlights the current limitations of AI models and provides a rigorous benchmark to evaluate progress toward truly general-purpose AI assistants.
+
+## GAIA's core principles
+
+GAIA is carefully designed around four pillars:
+
+<CardGroup cols={2}>
+  <Card title="Real-world difficulty" icon="layers">
+    Tasks require multi-step reasoning, multimodal understanding, and tool interaction.
+  </Card>
+  <Card title="Human interpretability" icon="user">
+    Despite their difficulty for AI, tasks remain conceptually simple and easy to follow for humans.
+  </Card>
+  <Card title="Non-gameability" icon="shield">
+    Correct answers demand full task execution, making brute-forcing ineffective.
+  </Card>
+  <Card title="Simplicity of evaluation" icon="check-circle">
+    Answers are concise, factual, and unambiguous — ideal for benchmarking.
+  </Card>
+</CardGroup>
+
+## Difficulty levels
+
+GAIA tasks are organized into three levels of increasing complexity, each testing specific skills:
+
+<AccordionGroup>
+  <Accordion title="Level 1 — Focused tasks">
+    Requires fewer than 5 steps and minimal tool usage. A good starting point for evaluating basic agent capability.
+  </Accordion>
+  <Accordion title="Level 2 — Multi-tool coordination">
+    Involves more complex reasoning and coordination between multiple tools across 5–10 steps.
+  </Accordion>
+  <Accordion title="Level 3 — Long-horizon planning">
+    Demands long-term planning and advanced integration of various tools to complete highly complex tasks.
+  </Accordion>
+</AccordionGroup>
+
+![GAIA difficulty levels overview](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit4/gaia_levels.png)
+
+## Example of a hard GAIA question
+
+> Which of the fruits shown in the 2008 painting "Embroidery from Uzbekistan" were served as part of the October 1949 breakfast menu for the ocean liner that was later used as a floating prop for the film "The Last Voyage"? Give the items as a comma-separated list, ordering them in clockwise order based on their arrangement in the painting starting from the 12 o'clock position. Use the plural form of each fruit.
+
+This question challenges AI systems across several dimensions:
+
+- **Structured response format** — the answer must follow a specific ordering and grammar rule.
+- **Multimodal reasoning** — the agent must analyze an image of the painting.
+- **Multi-hop retrieval** — the agent must chain together three independent facts:
+  1. Identify the fruits shown in the painting.
+  2. Discover which ocean liner was used as a prop in *The Last Voyage*.
+  3. Look up the October 1949 breakfast menu for that ship.
+- **Correct sequencing** — the steps must be executed in the right order for the answer to be valid.
+
+This kind of task highlights where standalone LLMs often fall short, making GAIA an ideal benchmark for agent-based systems that can reason, retrieve, and execute across multiple steps and modalities.
+
+![GAIA capabilities plot](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit4/gaia_capabilities.png)
+
+## Live evaluation
+
+To encourage continuous benchmarking, GAIA provides a public leaderboard hosted on Hugging Face where you can test your models against **300 testing questions**.
+
+<Note>
+  Check out the [GAIA leaderboard](https://huggingface.co/spaces/gaia-benchmark/leaderboard) to see how top systems compare.
+</Note>
+
+## Further reading
+
+<CardGroup cols={2}>
+  <Card title="GAIA paper" icon="file-text" href="https://huggingface.co/papers/2311.12983">
+    Read the full academic paper introducing the GAIA benchmark.
+  </Card>
+  <Card title="OpenAI Deep Research release post" icon="external-link" href="https://openai.com/index/introducing-deep-research/">
+    Learn about OpenAI's Deep Research system and its GAIA results.
+  </Card>
+  <Card title="Open-source DeepResearch" icon="github" href="https://huggingface.co/blog/open-deep-research">
+    Explore the open-source effort to replicate Deep Research's search agent approach.
+  </Card>
+</CardGroup>

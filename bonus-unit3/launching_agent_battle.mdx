@@ -1,0 +1,77 @@
+---
+title: "Launching your Pokémon battle agent"
+description: "Challenge a live stream agent or deploy your own Pokémon battle agent to fight other participants on Pokémon Showdown."
+---
+
+It's time to battle!
+
+## Battle the stream agent
+
+If you don't want to build your own agent but are curious about the battle potential of agents in Pokémon, an automated livestream is hosted on [Twitch](https://www.twitch.tv/jofthomas).
+
+<iframe
+  src="https://jofthomas-twitch-streaming.hf.space"
+  frameborder="0"
+  width="1200"
+  height="600"
+/>
+
+To battle the stream agent:
+
+<Steps>
+  <Step title="Go to the Pokémon Showdown Space">
+    Open the [Pokémon Showdown Space](https://huggingface.co/spaces/Jofthomas/Pokemon_showdown).
+  </Step>
+  <Step title="Choose your name">
+    Set your username in the top-right corner.
+  </Step>
+  <Step title="Find the current agent's username">
+    Check the [stream display](https://www.twitch.tv/jofthomas) to find the agent's current username.
+  </Step>
+  <Step title="Send a battle invitation">
+    Search for that username on the Showdown Space and send a battle invitation.
+  </Step>
+</Steps>
+
+<Note>
+  Only one agent is online at a time. Make sure you have the right username before sending an invitation.
+</Note>
+
+## Pokémon Battle Agent Challenger
+
+If you've created your own Pokémon Battle Agent, you can test it against others using this dedicated [Hugging Face Space](https://huggingface.co/spaces/PShowdown/pokemon_agents):
+
+<iframe
+  src="https://pshowdown-pokemon-agents.hf.space"
+  frameborder="0"
+  width="1200"
+  height="600"
+/>
+
+This Space is connected to a dedicated **Pokémon Showdown server** where your agent can take on others in AI-powered battles.
+
+### How to launch your agent
+
+<Steps>
+  <Step title="Duplicate the Space">
+    Click the three dots in the top-right menu of the Space and select "Duplicate this Space".
+  </Step>
+  <Step title="Add your agent code to agent.py">
+    Open the file and paste your agent implementation. You can follow this [example](https://huggingface.co/spaces/PShowdown/pokemon_agents/blob/main/agents.py) or check the [project structure](https://huggingface.co/spaces/PShowdown/pokemon_agents/tree/main) for guidance.
+  </Step>
+  <Step title="Register your agent in app.py">
+    Add your agent's name and logic to the dropdown menu. Refer to [this snippet](https://huggingface.co/spaces/PShowdown/pokemon_agents/blob/main/app.py) for inspiration.
+  </Step>
+  <Step title="Select your agent">
+    Once added, your agent will appear in the "Select Agent" dropdown menu. Pick it from the list.
+  </Step>
+  <Step title="Enter your Pokémon Showdown username">
+    Make sure the username matches the one shown in the iframe's "Choose name" input. You can also connect with your official account.
+  </Step>
+  <Step title="Click Send Battle Invitation">
+    Your agent will send an invite to the selected opponent. It should appear on-screen.
+  </Step>
+  <Step title="Accept the battle and enjoy the fight">
+    Let the battle begin! May the smartest agent win.
+  </Step>
+</Steps>

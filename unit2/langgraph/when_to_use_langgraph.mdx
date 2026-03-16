@@ -1,0 +1,89 @@
+---
+title: What is LangGraph and when to use it?
+description: Learn what LangGraph is, how it differs from LangChain, and the scenarios where it excels over plain Python or other frameworks.
+---
+
+`LangGraph` is a framework developed by [LangChain](https://www.langchain.com/) **to manage the control flow of applications that integrate an LLM**.
+
+## Is LangGraph different from LangChain?
+
+LangChain provides a standard interface to interact with models and other components, useful for retrieval, LLM calls, and tool calls. The classes from LangChain may be used inside LangGraph, but they don't have to be.
+
+The packages are separate and can be used in isolation, but in practice most resources you'll find online use both together.
+
+## When should you use LangGraph?
+
+### Control vs. freedom
+
+When designing AI applications, you face a fundamental trade-off between **control** and **freedom**:
+
+<CardGroup cols={2}>
+  <Card title="Freedom" icon="bird">
+    Gives your LLM more room to be creative and tackle unexpected problems. Code agents like those in `smolagents` operate this way — they can call multiple tools in a single step and create their own tools.
+  </Card>
+  <Card title="Control" icon="sliders">
+    Ensures predictable behavior and maintains guardrails. LangGraph sits at this end of the spectrum, providing explicit structure over how your agent executes.
+  </Card>
+</CardGroup>
+
+`LangGraph` shines when you need **control** over the execution of your agent. It gives you the tools to build an application that follows a predictable process while still leveraging the power of LLMs.
+
+If your application involves a series of steps that need to be orchestrated in a specific way — with decisions made at each junction point — **LangGraph provides the structure you need**.
+
+### A practical example
+
+Suppose you want to build an LLM assistant that can answer questions about documents. Since LLMs understand text best, you first need to convert complex modalities (charts, tables) into text. But the right approach depends on the type of document you have — this is a branching decision:
+
+<img
+  src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/LangGraph/flow.png"
+  alt="Control flow diagram showing document type branching"
+/>
+
+<Tip>
+  The left branch in the diagram is not an agent, since no tool call is involved. The right branch, however, needs to write code to query an XLS file (convert to pandas and manipulate it).
+</Tip>
+
+While this branching is deterministic, you can also design branches conditioned on the output of an LLM, making them non-deterministic.
+
+### Key scenarios where LangGraph excels
+
+<AccordionGroup>
+  <Accordion title="Multi-step reasoning processes">
+    Applications that require explicit control over the order and conditions under which each step runs.
+  </Accordion>
+  <Accordion title="Persistence of state between steps">
+    Workflows where information gathered in one step must be available and tracked in subsequent steps.
+  </Accordion>
+  <Accordion title="Combining deterministic logic with AI">
+    Systems that mix fixed business rules with the flexible reasoning capabilities of an LLM.
+  </Accordion>
+  <Accordion title="Human-in-the-loop workflows">
+    Applications that need to pause for user review or approval before continuing.
+  </Accordion>
+  <Accordion title="Complex agent architectures">
+    Multi-component systems where several specialized agents or tools must coordinate.
+  </Accordion>
+</AccordionGroup>
+
+In short: whenever you, as the designer, can map out a flow of actions based on the output of each action and decide what to execute next — LangGraph is the right framework.
+
+## How does LangGraph work?
+
+At its core, `LangGraph` uses a directed graph structure to define the flow of your application:
+
+- **Nodes** represent individual processing steps (calling an LLM, using a tool, or making a decision).
+- **Edges** define the possible transitions between steps.
+- **State** is user-defined, maintained, and passed between nodes during execution. When deciding which node to visit next, it is the current state that is examined.
+
+You'll explore these fundamental blocks in detail in the next section.
+
+## Why use LangGraph instead of plain Python?
+
+You might wonder: "Can't I just write regular Python code with `if`/`else` statements to handle all these flows?"
+
+While technically true, LangGraph offers meaningful advantages for building complex systems. You could build the same application without it, but LangGraph provides easier tools and abstractions including:
+
+- **State management** built in
+- **Graph visualization** out of the box
+- **Logging and traces** for observability
+- **Built-in human-in-the-loop** support

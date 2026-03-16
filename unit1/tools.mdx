@@ -1,0 +1,299 @@
+---
+title: What are tools?
+description: Learn what AI tools are, how to design them effectively, and how to integrate them into your agent via the system message.
+---
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/whiteboard-check-2.jpg" alt="Unit 1 planning whiteboard" />
+
+One crucial aspect of AI agents is their ability to take **actions**. As you've seen, this happens through the use of **tools**.
+
+In this section, you'll learn what tools are, how to design them effectively, and how to integrate them into your agent via the system message.
+
+By giving your agent the right tools—and clearly describing how those tools work—you can dramatically increase what your AI can accomplish.
+
+## What are AI tools?
+
+A **tool is a function given to the LLM**. This function should fulfill a **clear objective**.
+
+Here are some commonly used tools in AI agents:
+
+| Tool | Description |
+|---|---|
+| Web search | Allows the agent to fetch up-to-date information from the internet. |
+| Image generation | Creates images based on text descriptions. |
+| Retrieval | Retrieves information from an external source. |
+| API interface | Interacts with an external API (GitHub, YouTube, Spotify, etc.). |
+
+These are only examples—you can create a tool for any use case.
+
+A good tool should **complement the power of an LLM**. For instance, if you need to perform arithmetic, giving a **calculator tool** to your LLM will provide better results than relying on the native capabilities of the model.
+
+Furthermore, **LLMs predict the completion of a prompt based on their training data**, which means their internal knowledge only includes events prior to their training. Therefore, if your agent needs up-to-date data you must provide it through a tool.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/weather.jpg" alt="LLM hallucinating weather without a tool" />
+
+A tool should contain:
+
+- A **textual description of what the function does**
+- A *callable* (something to perform an action)
+- *Arguments* with typings
+- (Optional) Outputs with typings
+
+## How tools work
+
+LLMs can only receive text inputs and generate text outputs. They have no way to call tools on their own. When you provide tools to an agent, you're teaching the LLM about the existence of these tools and instructing it to generate text-based invocations when needed.
+
+For example, if you provide a tool to check the weather at a location and then ask the LLM about the weather in Paris, the LLM will recognize this as an opportunity to use the weather tool. Instead of retrieving the weather data itself, the LLM will generate text that represents a tool call, such as `call weather_tool('Paris')`.
+
+The **agent** then reads this response, identifies that a tool call is required, executes the tool on the LLM's behalf, and retrieves the actual weather data.
+
+<Info>
+  The tool-calling steps are typically not shown to the user. The agent appends them as a new message before passing the updated conversation to the LLM again. The LLM then processes this additional context and generates a natural-sounding response for the user.
+</Info>
+
+## How to give tools to an LLM
+
+You essentially use the system prompt to provide textual descriptions of available tools to the model:
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/Agent_system_prompt.png" alt="System prompt for tools" />
+
+For this to work, you must be precise and accurate about:
+
+1. **What the tool does**
+2. **What exact inputs it expects**
+
+Tool descriptions are usually provided using expressive but precise structures, such as programming languages or JSON, because any precise and coherent format works.
+
+To understand this through a concrete example, consider implementing a simplified **calculator** tool that multiplies two integers:
+
+```python
+def calculator(a: int, b: int) -> int:
+    """Multiply two integers."""
+    return a * b
+```
+
+This tool is called `calculator`, it **multiplies two integers**, and requires the following inputs:
+
+- **`a`** (*int*): An integer.
+- **`b`** (*int*): An integer.
+
+The output is another integer:
+- (*int*): The product of `a` and `b`.
+
+Put together as a text string for the LLM:
+
+```text
+Tool Name: calculator, Description: Multiply two integers., Arguments: a: int, b: int, Outputs: int
+```
+
+<Note>
+  This textual description is what you want the LLM to know about the tool. When passed as part of the input to the LLM, the model will recognize it as a tool and know what inputs to pass and what to expect from the output.
+</Note>
+
+### Auto-formatting tool descriptions
+
+Your tool implementation in Python already provides everything needed:
+
+- A descriptive name: `calculator`
+- A longer description from the docstring: `Multiply two integers.`
+- The inputs and their types
+- The output type
+
+You can leverage Python's introspection features to build a tool description automatically. All you need is for the tool implementation to use type hints, docstrings, and sensible function names.
+
+After adding a `@tool` decorator, you only need to call `to_string()` to get the description:
+
+```python
+@tool
+def calculator(a: int, b: int) -> int:
+    """Multiply two integers."""
+    return a * b
+
+print(calculator.to_string())
+```
+
+This outputs the same string you would write manually:
+
+```text
+Tool Name: calculator, Description: Multiply two integers., Arguments: a: int, b: int, Outputs: int
+```
+
+### Generic tool implementation
+
+Here's a generic `Tool` class you can reuse whenever you need to use a tool:
+
+<Note>
+  This example implementation is fictional but closely resembles real implementations in most libraries.
+</Note>
+
+```python
+from typing import Callable
+
+
+class Tool:
+    """
+    A class representing a reusable piece of code (Tool).
+
+    Attributes:
+        name (str): Name of the tool.
+        description (str): A textual description of what the tool does.
+        func (callable): The function this tool wraps.
+        arguments (list): A list of arguments.
+        outputs (str or list): The return type(s) of the wrapped function.
+    """
+    def __init__(self,
+                 name: str,
+                 description: str,
+                 func: Callable,
+                 arguments: list,
+                 outputs: str):
+        self.name = name
+        self.description = description
+        self.func = func
+        self.arguments = arguments
+        self.outputs = outputs
+
+    def to_string(self) -> str:
+        """
+        Return a string representation of the tool,
+        including its name, description, arguments, and outputs.
+        """
+        args_str = ", ".join([
+            f"{arg_name}: {arg_type}" for arg_name, arg_type in self.arguments
+        ])
+
+        return (
+            f"Tool Name: {self.name},"
+            f" Description: {self.description},"
+            f" Arguments: {args_str},"
+            f" Outputs: {self.outputs}"
+        )
+
+    def __call__(self, *args, **kwargs):
+        """
+        Invoke the underlying function (callable) with provided arguments.
+        """
+        return self.func(*args, **kwargs)
+```
+
+The `Tool` class includes:
+
+- **`name`** (*str*): The name of the tool.
+- **`description`** (*str*): A brief description of what the tool does.
+- **`function`** (*callable*): The function the tool executes.
+- **`arguments`** (*list*): The expected input parameters.
+- **`outputs`** (*str* or *list*): The expected outputs of the tool.
+- **`__call__()`**: Calls the function when the tool instance is invoked.
+- **`to_string()`**: Converts the tool's attributes into a textual representation.
+
+You can create a `Tool` instance explicitly:
+
+```python
+calculator_tool = Tool(
+    "calculator",                   # name
+    "Multiply two integers.",       # description
+    calculator,                     # function to call
+    [("a", "int"), ("b", "int")],   # inputs (names and types)
+    "int",                          # output
+)
+```
+
+Or you can use Python's `inspect` module to retrieve all the information automatically—which is what the `@tool` decorator does.
+
+<Accordion title="View decorator implementation">
+
+```python
+import inspect
+
+def tool(func):
+    """
+    A decorator that creates a Tool instance from the given function.
+    """
+    # Get the function signature
+    signature = inspect.signature(func)
+
+    # Extract (param_name, param_annotation) pairs for inputs
+    arguments = []
+    for param in signature.parameters.values():
+        annotation_name = (
+            param.annotation.__name__
+            if hasattr(param.annotation, '__name__')
+            else str(param.annotation)
+        )
+        arguments.append((param.name, annotation_name))
+
+    # Determine the return annotation
+    return_annotation = signature.return_annotation
+    if return_annotation is inspect._empty:
+        outputs = "No return annotation"
+    else:
+        outputs = (
+            return_annotation.__name__
+            if hasattr(return_annotation, '__name__')
+            else str(return_annotation)
+        )
+
+    # Use the function's docstring as the description (default if None)
+    description = func.__doc__ or "No description provided."
+
+    # The function name becomes the Tool name
+    name = func.__name__
+
+    # Return a new Tool instance
+    return Tool(
+        name=name,
+        description=description,
+        func=func,
+        arguments=arguments,
+        outputs=outputs
+    )
+```
+
+</Accordion>
+
+With this decorator in place, you can implement the tool like this:
+
+```python
+@tool
+def calculator(a: int, b: int) -> int:
+    """Multiply two integers."""
+    return a * b
+
+print(calculator.to_string())
+```
+
+And call `to_string()` to get the description automatically:
+
+```text
+Tool Name: calculator, Description: Multiply two integers., Arguments: a: int, b: int, Outputs: int
+```
+
+The description is **injected into the system prompt**. Here's how it looks after replacing the `tools_description`:
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/Agent_system_prompt_tools.png" alt="System prompt with tools injected" />
+
+In the [Actions](/unit1/actions) section, you'll learn more about how an agent can **call** this tool.
+
+### Model Context Protocol (MCP): a unified tool interface
+
+Model Context Protocol (MCP) is an **open protocol** that standardizes how applications **provide tools to LLMs**. MCP provides:
+
+- A growing list of pre-built integrations that your LLM can directly plug into
+- The flexibility to switch between LLM providers and vendors
+- Best practices for securing your data within your infrastructure
+
+This means that **any framework implementing MCP can leverage tools defined within the protocol**, eliminating the need to reimplement the same tool interface for each framework.
+
+<Info>
+  If you want to dive deeper into MCP, check out the [free MCP Course](https://huggingface.co/learn/mcp-course/).
+</Info>
+
+---
+
+To summarize, you learned:
+
+- **What tools are:** Functions that give LLMs extra capabilities, such as performing calculations or accessing external data.
+- **How to define a tool:** By providing a clear textual description, inputs, outputs, and a callable function.
+- **Why tools are essential:** They enable agents to overcome the limitations of static model training, handle real-time tasks, and perform specialized actions.
+
+Next, move on to the [Agent workflow](/unit1/agent-steps-and-structure) where you'll see how an agent observes, thinks, and acts—bringing together everything covered so far.

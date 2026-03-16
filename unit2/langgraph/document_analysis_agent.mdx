@@ -1,0 +1,278 @@
+---
+title: Alfred, the document analyst agent
+description: Build a ReAct-pattern document analysis agent using LangGraph that reads image documents with a vision model and performs calculations with tools.
+---
+
+As Mr. Wayne's trusted butler, Alfred is responsible for analyzing all documentary needs — training schedules, nutritional plans, and anything Mr. Wayne leaves behind before his nighttime activities.
+
+In this section, you'll build a document analysis system using LangGraph that can:
+
+1. Process image documents
+2. Extract text using a Vision Language Model (VLM)
+3. Perform calculations when needed
+4. Analyze content and provide concise summaries
+5. Execute specific instructions related to documents
+
+<Tip>
+  You can follow along with the code in [this notebook](https://huggingface.co/agents-course/notebooks/blob/main/unit2/langgraph/agent.ipynb), which you can run using Google Colab.
+</Tip>
+
+## The butler's workflow
+
+<img
+  src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/LangGraph/alfred_flow.png"
+  alt="Diagram showing Alfred's document analysis workflow"
+/>
+
+## Setting up the environment
+
+```python
+%pip install langgraph langchain_openai langchain_core
+```
+
+```python
+import base64
+from typing import List, TypedDict, Annotated, Optional
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import AnyMessage, SystemMessage, HumanMessage
+from langgraph.graph.message import add_messages
+from langgraph.graph import START, StateGraph
+from langgraph.prebuilt import ToolNode, tools_condition
+from IPython.display import Image, display
+```
+
+## Defining the agent's state
+
+This state is more complex than the ones you've seen so far. `AnyMessage` is a LangChain class that defines messages, and `add_messages` is an operator that **appends** the latest message rather than overwriting it.
+
+This introduces a new concept in LangGraph: you can attach operators to state fields to define how they should be updated.
+
+```python
+class AgentState(TypedDict):
+    # The document provided
+    input_file: Optional[str]  # Contains file path (PDF/PNG)
+    messages: Annotated[list[AnyMessage], add_messages]
+```
+
+## Preparing tools
+
+```python
+vision_llm = ChatOpenAI(model="gpt-4o")
+
+def extract_text(img_path: str) -> str:
+    """
+    Extract text from an image file using a multimodal model.
+    
+    Master Wayne often leaves notes with his training regimen or meal plans.
+    This allows me to properly analyze the contents.
+    """
+    all_text = ""
+    try:
+        # Read image and encode as base64
+        with open(img_path, "rb") as image_file:
+            image_bytes = image_file.read()
+
+        image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+        # Prepare the prompt including the base64 image data
+        message = [
+            HumanMessage(
+                content=[
+                    {
+                        "type": "text",
+                        "text": (
+                            "Extract all the text from this image. "
+                            "Return only the extracted text, no explanations."
+                        ),
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{image_base64}"
+                        },
+                    },
+                ]
+            )
+        ]
+
+        # Call the vision-capable model
+        response = vision_llm.invoke(message)
+
+        # Append extracted text
+        all_text += response.content + "\n\n"
+
+        return all_text.strip()
+    except Exception as e:
+        # A butler should handle errors gracefully
+        error_msg = f"Error extracting text: {str(e)}"
+        print(error_msg)
+        return ""
+
+def divide(a: int, b: int) -> float:
+    """Divide a and b - for Master Wayne's occasional calculations."""
+    return a / b
+
+# Equip the butler with tools
+tools = [
+    divide,
+    extract_text
+]
+
+llm = ChatOpenAI(model="gpt-4o")
+llm_with_tools = llm.bind_tools(tools, parallel_tool_calls=False)
+```
+
+## Defining the assistant node
+
+```python
+def assistant(state: AgentState):
+    # System message
+    textual_description_of_tool="""
+extract_text(img_path: str) -> str:
+    Extract text from an image file using a multimodal model.
+
+    Args:
+        img_path: A local image file path (strings).
+
+    Returns:
+        A single string containing the concatenated text extracted from each image.
+divide(a: int, b: int) -> float:
+    Divide a and b
+"""
+    image=state["input_file"]
+    sys_msg = SystemMessage(content=f"You are a helpful butler named Alfred that serves Mr. Wayne and Batman. You can analyse documents and run computations with provided tools:\n{textual_description_of_tool} \n You have access to some optional images. Currently the loaded image is: {image}")
+
+    return {
+        "messages": [llm_with_tools.invoke([sys_msg] + state["messages"])],
+        "input_file": state["input_file"]
+    }
+```
+
+## The ReAct pattern
+
+This agent follows the **ReAct** pattern (Reason-Act-Observe):
+
+<Steps>
+  <Step title="Reason">
+    Alfred reasons about the document and the request.
+  </Step>
+  <Step title="Act">
+    Alfred uses an appropriate tool (e.g., `extract_text` or `divide`).
+  </Step>
+  <Step title="Observe">
+    Alfred observes the tool's result.
+  </Step>
+  <Step title="Repeat">
+    Alfred repeats until the request is fully addressed, then responds.
+  </Step>
+</Steps>
+
+Here's how the graph is constructed:
+
+```python
+# The graph
+builder = StateGraph(AgentState)
+
+# Define nodes: these do the work
+builder.add_node("assistant", assistant)
+builder.add_node("tools", ToolNode(tools))
+
+# Define edges: these determine how the control flow moves
+builder.add_edge(START, "assistant")
+builder.add_conditional_edges(
+    "assistant",
+    # If the latest message requires a tool, route to tools
+    # Otherwise, provide a direct response
+    tools_condition,
+)
+builder.add_edge("tools", "assistant")
+react_graph = builder.compile()
+
+# Show the butler's thought process
+display(Image(react_graph.get_graph(xray=True).draw_mermaid_png()))
+```
+
+The flow works as follows:
+
+- The `assistant` node calls the LLM with bound tools.
+- `tools_condition` checks whether the model's output is a tool call.
+- If it is a tool call, the flow routes to the `tools` node.
+- The `tools` node connects back to `assistant`, forming a loop.
+- This loop continues as long as the model keeps calling tools.
+- Once the model produces a plain response (no tool call), the flow routes to `END`.
+
+<img
+  src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/LangGraph/Agent.png"
+  alt="Diagram of the ReAct pattern showing the assistant-tools loop"
+/>
+
+## The butler in action
+
+### Example 1: Simple calculations
+
+```python
+messages = [HumanMessage(content="Divide 6790 by 5")]
+messages = react_graph.invoke({"messages": messages, "input_file": None})
+
+# Show the messages
+for m in messages['messages']:
+    m.pretty_print()
+```
+
+The conversation proceeds:
+
+```
+Human: Divide 6790 by 5
+
+AI Tool Call: divide(a=6790, b=5)
+
+Tool Response: 1358.0
+
+Alfred: The result of dividing 6790 by 5 is 1358.0.
+```
+
+### Example 2: Analyzing Master Wayne's training documents
+
+```python
+messages = [HumanMessage(content="According to the note provided by Mr. Wayne in the provided images. What's the list of items I should buy for the dinner menu?")]
+messages = react_graph.invoke({"messages": messages, "input_file": "Batman_training_and_meals.png"})
+```
+
+The interaction proceeds:
+
+```
+Human: According to the note provided by Mr. Wayne in the provided images. What's the list of items I should buy for the dinner menu?
+
+AI Tool Call: extract_text(img_path="Batman_training_and_meals.png")
+
+Tool Response: [Extracted text with training schedule and menu details]
+
+Alfred: For the dinner menu, you should buy the following items:
+
+1. Grass-fed local sirloin steak
+2. Organic spinach
+3. Piquillo peppers
+4. Potatoes (for oven-baked golden herb potato)
+5. Fish oil (2 grams)
+
+Ensure the steak is grass-fed and the spinach and peppers are organic for the best quality meal.
+```
+
+## Key takeaways
+
+If you want to create your own document analysis agent, keep these considerations in mind:
+
+<AccordionGroup>
+  <Accordion title="Define clear tools">
+    Each tool should have a specific, well-scoped purpose tied to the document tasks you need to perform. Clear tool definitions make it easier for the LLM to decide when and how to use them.
+  </Accordion>
+  <Accordion title="Create a robust state tracker">
+    Use `add_messages` (or a similar operator) to maintain context across tool calls. Without it, the agent would lose sight of previous interactions.
+  </Accordion>
+  <Accordion title="Consider error handling">
+    Tools can fail — network errors, file-not-found, parsing issues. Handle exceptions gracefully so the agent can recover or report the problem clearly.
+  </Accordion>
+  <Accordion title="Maintain contextual awareness">
+    The `add_messages` operator in the state ensures that each new tool result is appended rather than overwriting previous messages, preserving the full conversation history for the LLM.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,85 @@
+---
+title: "What is function calling?"
+description: "Understand how function calling enables LLMs to take actions, the new conversation roles it introduces, and the special tokens used under the hood."
+---
+
+Function calling is a **way for an LLM to take actions on its environment**. It was first [introduced in GPT-4](https://openai.com/index/function-calling-and-other-api-updates/) and later reproduced in other models.
+
+Just like the tools of an agent, function calling gives the model the capacity to **interact with its environment**. However, the function calling capability **is learned by the model**, and relies **less on prompting than other agent techniques**.
+
+In Unit 1, the agent **didn't learn to use tools** — we provided the list and relied on the model's ability to generalize a plan using those tools. Here, **with function calling, the agent is fine-tuned (trained) to use tools**.
+
+## How does the model learn to take an action?
+
+In Unit 1, we explored the general workflow of an agent. Once a user gives the agent some tools and a query, the model cycles through:
+
+1. **Think** — what action(s) do I need to take to fulfill the objective?
+2. **Act** — format the action with the correct parameters and stop generation.
+3. **Observe** — get back the result from execution.
+
+In a typical conversation through an API, messages alternate between user and assistant like this:
+
+```python
+conversation = [
+    {"role": "user", "content": "I need help with my order"},
+    {"role": "assistant", "content": "I'd be happy to help. Could you provide your order number?"},
+    {"role": "user", "content": "It's ORDER-123"},
+]
+```
+
+Function calling **brings new roles to the conversation**:
+
+1. One new role for an **action**
+2. One new role for an **observation**
+
+Using the [Mistral API](https://docs.mistral.ai/capabilities/function_calling/) as an example, the conversation looks like this:
+
+```python
+conversation = [
+    {
+        "role": "user",
+        "content": "What's the status of my transaction T1001?"
+    },
+    {
+        "role": "assistant",
+        "content": "",
+        "function_call": {
+            "name": "retrieve_payment_status",
+            "arguments": "{\"transaction_id\": \"T1001\"}"
+        }
+    },
+    {
+        "role": "tool",
+        "name": "retrieve_payment_status",
+        "content": "{\"status\": \"Paid\"}"
+    },
+    {
+        "role": "assistant",
+        "content": "Your transaction T1001 has been successfully paid."
+    }
+]
+```
+
+<Note>
+  In this case and in many other APIs, the model formats the action to take as an "assistant" message. The chat template then represents this using **special tokens** for function calling.
+</Note>
+
+## Special tokens for function calling
+
+Under the hood, the chat template uses special tokens to mark different stages of the function-calling flow:
+
+| Token | Purpose |
+|---|---|
+| `[AVAILABLE_TOOLS]` | Start the list of available tools |
+| `[/AVAILABLE_TOOLS]` | End the list of available tools |
+| `[TOOL_CALLS]` | Make a call to a tool (take an "action") |
+| `[TOOL_RESULTS]` | Observe the result of the action |
+| `[/TOOL_RESULTS]` | End of the observation (the model can decode again) |
+
+For a deeper dive, check the [Mistral function calling documentation](https://docs.mistral.ai/capabilities/function_calling/).
+
+---
+
+Now that you understand what function calling is and how it works, the next step is to **add function-calling capabilities to a model that doesn't have them yet**: [google/gemma-2-2b-it](https://huggingface.co/google/gemma-2-2b-it), by appending new special tokens to the model.
+
+To do that, you first need to understand fine-tuning and LoRA.

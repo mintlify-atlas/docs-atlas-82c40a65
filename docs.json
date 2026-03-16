@@ -1,122 +1,160 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Hugging Face Agents Course",
+  "theme": "maple",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#fbc016",
+    "light": "#ed3e3b",
+    "dark": "#433f43"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "https://media.brand.dev/52870ee0-d478-4e6c-a50e-5af47efccb56.jpg",
+  "logo": {
+    "light": "https://media.brand.dev/59fa3902-7a75-449a-bc72-54ebb0b4cb7a.svg",
+    "dark": "https://media.brand.dev/50968b9a-0638-486f-a686-d6a24a782f8c.svg"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/huggingface/agents-course"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/huggingface/agents-course"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Course",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "unit0/introduction",
+              "unit0/onboarding",
+              "unit0/discord101"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Unit 1: Introduction to Agents",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "unit1/introduction",
+              "unit1/what-are-agents",
+              "unit1/what-are-llms",
+              "unit1/messages-and-special-tokens",
+              "unit1/tools",
+              "unit1/agent-steps-and-structure",
+              "unit1/thoughts",
+              "unit1/actions",
+              "unit1/observations",
+              "unit1/dummy-agent-library",
+              "unit1/tutorial",
+              "unit1/conclusion"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Unit 2: Frameworks for AI Agents",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "unit2/introduction"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Unit 2.1: smolagents",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "unit2/smolagents/introduction",
+              "unit2/smolagents/why_use_smolagents",
+              "unit2/smolagents/code_agents",
+              "unit2/smolagents/tool_calling_agents",
+              "unit2/smolagents/tools",
+              "unit2/smolagents/retrieval_agents",
+              "unit2/smolagents/multi_agent_systems",
+              "unit2/smolagents/vision_agents",
+              "unit2/smolagents/conclusion"
+            ]
+          },
+          {
+            "group": "Unit 2.2: LlamaIndex",
+            "pages": [
+              "unit2/llama-index/introduction",
+              "unit2/llama-index/llama-hub",
+              "unit2/llama-index/components",
+              "unit2/llama-index/tools",
+              "unit2/llama-index/agents",
+              "unit2/llama-index/workflows",
+              "unit2/llama-index/conclusion"
+            ]
+          },
+          {
+            "group": "Unit 2.3: LangGraph",
+            "pages": [
+              "unit2/langgraph/introduction",
+              "unit2/langgraph/when_to_use_langgraph",
+              "unit2/langgraph/building_blocks",
+              "unit2/langgraph/first_graph",
+              "unit2/langgraph/document_analysis_agent",
+              "unit2/langgraph/conclusion"
+            ]
+          },
+          {
+            "group": "Unit 3: Agentic RAG",
+            "pages": [
+              "unit3/agentic-rag/introduction",
+              "unit3/agentic-rag/agentic-rag",
+              "unit3/agentic-rag/invitees",
+              "unit3/agentic-rag/tools",
+              "unit3/agentic-rag/agent",
+              "unit3/agentic-rag/conclusion"
+            ]
+          },
+          {
+            "group": "Unit 4: Final Project",
+            "pages": [
+              "unit4/introduction",
+              "unit4/what-is-gaia",
+              "unit4/hands-on",
+              "unit4/get-your-certificate",
+              "unit4/conclusion",
+              "unit4/additional-readings"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Bonus Units",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Bonus Unit 1: Fine-tuning for Function Calling",
             "pages": [
-              "api-reference/introduction"
+              "bonus-unit1/introduction",
+              "bonus-unit1/what-is-function-calling",
+              "bonus-unit1/fine-tuning",
+              "bonus-unit1/conclusion"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Bonus Unit 2: Observability & Evaluation",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "bonus-unit2/introduction",
+              "bonus-unit2/what-is-agent-observability-and-evaluation",
+              "bonus-unit2/monitoring-and-evaluating-agents-notebook",
+              "bonus-unit2/quiz"
+            ]
+          },
+          {
+            "group": "Bonus Unit 3: Agents in Games",
+            "pages": [
+              "bonus-unit3/introduction",
+              "bonus-unit3/state-of-art",
+              "bonus-unit3/from-llm-to-agents",
+              "bonus-unit3/building_your_pokemon_agent",
+              "bonus-unit3/launching_agent_battle",
+              "bonus-unit3/conclusion"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

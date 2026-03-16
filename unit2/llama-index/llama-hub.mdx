@@ -1,0 +1,60 @@
+---
+title: Introduction to LlamaHub
+description: Learn how to use LlamaHub to find, install, and integrate hundreds of LlamaIndex components, agents, and tools.
+---
+
+**LlamaHub is a registry of hundreds of integrations, agents, and tools that you can use within LlamaIndex.**
+
+![LlamaHub registry overview](https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/llama-index/llama-hub.png)
+
+You'll use various integrations throughout this course, so let's first look at LlamaHub and how it can help you.
+
+## Installation
+
+LlamaIndex installation instructions are available as a well-structured **overview on [LlamaHub](https://llamahub.ai/)**. This might be a bit overwhelming at first, but most **installation commands generally follow an easy-to-remember format**:
+
+```bash
+pip install llama-index-{component-type}-{framework-name}
+```
+
+Let's try to install the dependencies for an LLM and embedding component using the [Hugging Face inference API integration](https://llamahub.ai/l/llms/llama-index-llms-huggingface-api?from=llms).
+
+```bash
+pip install llama-index-llms-huggingface-api llama-index-embeddings-huggingface
+```
+
+## Usage
+
+Once installed, you can see the usage patterns. You'll notice that the import paths follow the install command!
+
+Below is an example of the usage of **the Hugging Face inference API for an LLM component**.
+
+```python
+from llama_index.llms.huggingface_api import HuggingFaceInferenceAPI
+import os
+from dotenv import load_dotenv
+
+# Load the .env file
+load_dotenv()
+
+# Retrieve HF_TOKEN from the environment variables
+hf_token = os.getenv("HF_TOKEN")
+
+llm = HuggingFaceInferenceAPI(
+    model_name="Qwen/Qwen2.5-Coder-32B-Instruct",
+    temperature=0.7,
+    max_tokens=100,
+    token=hf_token,
+    provider="auto"
+)
+
+response = llm.complete("Hello, how are you?")
+print(response)
+# I am good, how can I help you today?
+```
+
+You now know how to find, install, and use the integrations for the components you need. **Let's dive deeper into the components** and see how you can use them to build your own agents.
+
+<Card title="Components in LlamaIndex" icon="arrow-right" href="/unit2/llama-index/components">
+  Learn how to combine LlamaIndex components to create a full RAG pipeline.
+</Card>

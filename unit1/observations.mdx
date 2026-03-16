@@ -1,0 +1,56 @@
+---
+title: Observations
+description: Learn how agents perceive the consequences of their actions and integrate feedback from the environment to adapt and improve.
+---
+
+Observations are **how an agent perceives the consequences of its actions**.
+
+They provide crucial information that fuels the agent's thought process and guides future actions. They are **signals from the environment**—whether it's data from an API, error messages, or system logs—that guide the next cycle of thought.
+
+## What observations contain
+
+In the observation phase, the agent:
+
+- **Collects feedback:** Receives data or confirmation that its action was successful (or not).
+- **Appends results:** Integrates the new information into its existing context, effectively updating its memory.
+- **Adapts its strategy:** Uses this updated context to refine subsequent thoughts and actions.
+
+For example, if a weather API returns the data *"partly cloudy, 15°C, 60% humidity"*, this observation is appended to the agent's memory (at the end of the prompt). The agent then uses it to decide whether additional information is needed or if it's ready to provide a final answer.
+
+This **iterative incorporation of feedback ensures the agent remains dynamically aligned with its goals**, constantly learning and adjusting based on real-world outcomes.
+
+Observations can take many forms—from reading webpage text to monitoring a robot arm's position. Think of them as tool "logs" that provide textual feedback of the action execution:
+
+| Type of observation | Example |
+|---|---|
+| System feedback | Error messages, success notifications, status codes |
+| Data changes | Database updates, file system modifications, state changes |
+| Environmental data | Sensor readings, system metrics, resource usage |
+| Response analysis | API responses, query results, computation outputs |
+| Time-based events | Deadlines reached, scheduled tasks completed |
+
+## How results are appended
+
+After performing an action, the framework follows these steps:
+
+<Steps>
+  <Step title="Parse the action">
+    Identify the function(s) to call and the argument(s) to use.
+  </Step>
+  <Step title="Execute the action">
+    Run the identified function with the provided arguments.
+  </Step>
+  <Step title="Append the result as an observation">
+    Add the tool output back to the conversation context so the agent can reason about it in the next cycle.
+  </Step>
+</Steps>
+
+---
+
+You've now learned the agent's Thought-Action-Observation cycle.
+
+<Note>
+  If some aspects still seem a bit unclear, don't worry—you'll revisit and deepen these concepts in future units.
+</Note>
+
+Now it's time to put your knowledge into practice by coding your very first agent. Head to the [Dummy Agent Library](/unit1/dummy-agent-library) to get started.

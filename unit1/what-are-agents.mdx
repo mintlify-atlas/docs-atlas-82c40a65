@@ -1,0 +1,156 @@
+---
+title: What is an agent?
+description: Learn what an AI agent is, how it reasons and plans, and where agents fit on the spectrum of AI agency.
+---
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/whiteboard-no-check.jpg" alt="Unit 1 planning whiteboard" />
+
+By the end of this section, you'll feel comfortable with the concept of agents and their various applications in AI.
+
+To explain what an agent is, let's start with an analogy.
+
+## The big picture: Alfred the agent
+
+Meet Alfred. Alfred is an **agent**.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/this-is-alfred.jpg" alt="This is Alfred" />
+
+Imagine Alfred **receives a command**, such as: "Alfred, I would like a coffee please."
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/coffee-please.jpg" alt="I would like a coffee" />
+
+Because Alfred **understands natural language**, he quickly grasps the request.
+
+Before fulfilling the order, Alfred engages in **reasoning and planning**, figuring out the steps and tools he needs to:
+
+1. Go to the kitchen
+2. Use the coffee machine
+3. Brew the coffee
+4. Bring the coffee back
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/reason-and-plan.jpg" alt="Reason and plan" />
+
+Once he has a plan, he **must act**. To execute his plan, **he can use tools from the list of tools he knows about**.
+
+In this case, to make a coffee, he uses a coffee machine.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/make-coffee.jpg" alt="Make coffee" />
+
+Finally, Alfred brings the freshly brewed coffee back.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/bring-coffee.jpg" alt="Bring coffee" />
+
+This is what an agent is: an **AI model capable of reasoning, planning, and interacting with its environment**.
+
+We call it an agent because it has _agency_—the ability to interact with the environment.
+
+<img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/process.jpg" alt="Agent process" />
+
+## A more formal definition
+
+Now that you have the big picture, here's a more precise definition:
+
+> An agent is a system that leverages an AI model to interact with its environment in order to achieve a user-defined objective. It combines reasoning, planning, and the execution of actions (often via external tools) to fulfill tasks.
+
+Think of the agent as having two main parts:
+
+**1. The brain (AI model)**
+
+This is where all the thinking happens. The AI model **handles reasoning and planning** and decides **which actions to take based on the situation**.
+
+**2. The body (capabilities and tools)**
+
+This part represents **everything the agent is equipped to do**. The **scope of possible actions** depends on what the agent **has been equipped with**. For example, because humans lack wings, they can't perform the "fly" action, but they can execute actions like "walk", "run", "jump", "grab", and so on.
+
+## The spectrum of agency
+
+Following this definition, agents exist on a continuous spectrum of increasing agency:
+
+| Agency level | Description | What it's called | Example pattern |
+| --- | --- | --- | --- |
+| ☆☆☆ | Agent output has no impact on program flow | Simple processor | `process_llm_output(llm_response)` |
+| ★☆☆ | Agent output determines basic control flow | Router | `if llm_decision(): path_a() else: path_b()` |
+| ★★☆ | Agent output determines function execution | Tool caller | `run_function(llm_chosen_tool, llm_chosen_args)` |
+| ★★★ | Agent output controls iteration and program continuation | Multi-step agent | `while llm_should_continue(): execute_next_step()` |
+| ★★★ | One agentic workflow can start another agentic workflow | Multi-agent | `if llm_trigger(): execute_agent()` |
+
+<Note>
+  Table from the [smolagents conceptual guide](https://huggingface.co/docs/smolagents/conceptual_guides/intro_agents).
+</Note>
+
+## What type of AI models do agents use?
+
+The most common AI model found in agents is an LLM (Large Language Model), which takes **text** as input and outputs **text**.
+
+Well-known examples are **GPT4** from **OpenAI**, **Llama** from **Meta**, and **Gemini** from **Google**. These models have been trained on vast amounts of text and generalize well. You'll learn more about LLMs in the [next section](/unit1/what-are-llms).
+
+<Tip>
+  It's also possible to use models that accept other input types as the agent's core model. For example, a Vision Language Model (VLM), which is like an LLM but also understands images as input. This course focuses on LLMs for now and will discuss other options later.
+</Tip>
+
+## How does an AI take action on its environment?
+
+LLMs are powerful models, but **they can only generate text**.
+
+However, if you ask a chat application like HuggingChat or ChatGPT to generate an image, they can! This is possible because the developers implemented additional functionality called **Tools** that the LLM can use.
+
+<figure>
+  <img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/eiffel_brocolis.jpg" alt="Eiffel Tower with broccoli, generated by an image tool" />
+  <figcaption>The model used an image generation tool to generate this image.</figcaption>
+</figure>
+
+You'll learn more about tools in the [Tools](/unit1/tools) section.
+
+## What type of tasks can an agent do?
+
+An agent can perform any task you implement via **tools** to complete **actions**.
+
+For example, if you write an agent to act as a personal assistant on your computer and ask it to "send an email to my manager asking to delay today's meeting", you can give it code to send emails. This becomes a new tool the agent can use:
+
+```python
+def send_message_to(recipient, message):
+    """Useful to send an e-mail message to a recipient"""
+    ...
+```
+
+The LLM will generate code to run the tool when it needs to:
+
+```python
+send_message_to("Manager", "Can we postpone today's meeting?")
+```
+
+<Info>
+  The **design of the tools is very important and has a great impact on the quality of your agent**. Some tasks will require very specific tools to be crafted, while others may be solved with general-purpose tools like `web_search`.
+
+  Note that **actions are not the same as tools**. An action, for instance, can involve the use of multiple tools to complete.
+</Info>
+
+## Real-world examples
+
+<AccordionGroup>
+  <Accordion title="Personal virtual assistants">
+    Virtual assistants like Siri, Alexa, or Google Assistant work as agents when they interact on behalf of users in their digital environments.
+
+    They take user queries, analyze context, retrieve information from databases, and provide responses or initiate actions (like setting reminders, sending messages, or controlling smart devices).
+  </Accordion>
+  <Accordion title="Customer service chatbots">
+    Many companies deploy chatbots as agents that interact with customers in natural language.
+
+    These agents can answer questions, guide users through troubleshooting steps, open issues in internal databases, or even complete transactions. Their objectives might include improving user satisfaction, reducing wait times, or increasing sales conversion rates.
+  </Accordion>
+  <Accordion title="AI non-playable characters in video games">
+    AI agents powered by LLMs can make non-playable characters (NPCs) more dynamic and unpredictable.
+
+    Instead of following rigid behavior trees, they can **respond contextually, adapt to player interactions**, and generate more nuanced dialogue. This flexibility helps create more lifelike, engaging characters that evolve alongside the player's actions.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+To summarize, an agent is a system that uses an AI model (typically an LLM) as its core reasoning engine to:
+
+- **Understand natural language:** Interpret and respond to human instructions in a meaningful way.
+- **Reason and plan:** Analyze information, make decisions, and devise strategies to solve problems.
+- **Interact with its environment:** Gather information, take actions, and observe the results of those actions.
+
+Now that you have a solid grasp of what agents are, let's dive into the "agent's brain": [LLMs](/unit1/what-are-llms).

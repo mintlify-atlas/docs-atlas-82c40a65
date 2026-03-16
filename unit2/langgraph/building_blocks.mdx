@@ -1,0 +1,159 @@
+---
+title: Building blocks of LangGraph
+description: Understand the four core components of every LangGraph application — State, Nodes, Edges, and StateGraph — with hands-on code examples.
+---
+
+To build applications with LangGraph, you need to understand its core components. This section walks through the fundamental building blocks that make up a LangGraph application.
+
+<img
+  src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/LangGraph/Building_blocks.png"
+  alt="Diagram showing the four building blocks of LangGraph"
+  width="70%"
+/>
+
+A LangGraph application starts from an **entrypoint**. Depending on execution, the flow may go to one function or another until it reaches the `END`.
+
+<img
+  src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/LangGraph/application.png"
+  alt="Diagram of a LangGraph application flow from entrypoint to END"
+/>
+
+## 1. State
+
+**State** is the central concept in LangGraph. It represents all the information that flows through your application.
+
+```python
+from typing_extensions import TypedDict
+
+class State(TypedDict):
+    graph_state: str
+```
+
+The state is **user-defined**, so its fields should be carefully crafted to contain all the data needed for the decision-making process.
+
+<Tip>
+  Think carefully about what information your application needs to track between steps. A well-designed state is the foundation of a maintainable graph.
+</Tip>
+
+## 2. Nodes
+
+**Nodes** are Python functions. Each node:
+
+- Takes the state as input
+- Performs some operation
+- Returns updates to the state
+
+```python
+def node_1(state):
+    print("---Node 1---")
+    return {"graph_state": state['graph_state'] +" I am"}
+
+def node_2(state):
+    print("---Node 2---")
+    return {"graph_state": state['graph_state'] +" happy!"}
+
+def node_3(state):
+    print("---Node 3---")
+    return {"graph_state": state['graph_state'] +" sad!"}
+```
+
+Nodes can contain any of the following:
+
+<CardGroup cols={2}>
+  <Card title="LLM calls" icon="brain">
+    Generate text or make decisions using a language model.
+  </Card>
+  <Card title="Tool calls" icon="wrench">
+    Interact with external systems, APIs, or databases.
+  </Card>
+  <Card title="Conditional logic" icon="code-branch">
+    Determine which step comes next based on the current state.
+  </Card>
+  <Card title="Human intervention" icon="user">
+    Pause execution to collect input from a user before proceeding.
+  </Card>
+</CardGroup>
+
+<Info>
+  Some nodes necessary for the whole workflow — like `START` and `END` — are provided directly by LangGraph.
+</Info>
+
+## 3. Edges
+
+**Edges** connect nodes and define the possible paths through your graph.
+
+```python
+import random
+from typing import Literal
+
+def decide_mood(state) -> Literal["node_2", "node_3"]:
+    
+    # Often, we will use state to decide on the next node to visit
+    user_input = state['graph_state'] 
+    
+    # Here, let's just do a 50 / 50 split between nodes 2, 3
+    if random.random() < 0.5:
+
+        # 50% of the time, we return Node 2
+        return "node_2"
+    
+    # 50% of the time, we return Node 3
+    return "node_3"
+```
+
+Edges come in two forms:
+
+- **Direct**: Always go from node A to node B.
+- **Conditional**: Choose the next node based on the current state.
+
+## 4. StateGraph
+
+The **StateGraph** is the container that holds your entire agent workflow. You add nodes, define edges, and then compile the graph:
+
+```python
+from IPython.display import Image, display
+from langgraph.graph import StateGraph, START, END
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+builder.add_node("node_3", node_3)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_conditional_edges("node_1", decide_mood)
+builder.add_edge("node_2", END)
+builder.add_edge("node_3", END)
+
+# Add
+graph = builder.compile()
+```
+
+Once compiled, you can visualize the graph:
+
+```python
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+```
+
+<img
+  src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit2/LangGraph/basic_graph.jpeg"
+  alt="Mermaid diagram showing the compiled graph with node_1 branching to node_2 or node_3"
+/>
+
+And most importantly, you can invoke it:
+
+```python
+graph.invoke({"graph_state" : "Hi, this is Lance."})
+```
+
+```
+---Node 1---
+---Node 3---
+{'graph_state': 'Hi, this is Lance. I am sad!'}
+```
+
+## What's next?
+
+In the next section, you'll put these concepts into practice by building your first complete graph — Alfred's email sorting system, which reads incoming emails, classifies them, and drafts preliminary responses for legitimate ones.

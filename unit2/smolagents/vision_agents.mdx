@@ -1,0 +1,213 @@
+---
+title: "Vision agents"
+description: "Learn how to build vision-capable agents in smolagents using Vision-Language Models — including passing images at runtime and dynamically retrieving visual content via web browsing."
+---
+
+<Warning>
+  The examples in this section require access to a powerful VLM. They were tested using the GPT-4o API. See [Why use smolagents](/unit2/smolagents/why_use_smolagents) for alternative solutions supported by smolagents and Hugging Face.
+</Warning>
+
+Empowering agents with visual capabilities is crucial for solving tasks that go beyond text processing. Many real-world challenges — such as web browsing or document understanding — require analyzing rich visual content. `smolagents` provides built-in support for vision-language models (VLMs), enabling agents to process and interpret images effectively.
+
+In this example, Alfred the butler at Wayne Manor needs to verify the identities of party guests. Alfred may not be familiar with everyone arriving. Using an agent powered by a VLM, you can help him verify guest identities by searching for visual information about their appearance.
+
+## Providing images at the start of execution
+
+<Tip>
+  You can follow the code in [this notebook](https://huggingface.co/agents-course/notebooks/blob/main/unit2/smolagents/vision_agents.ipynb) that you can run using Google Colab.
+</Tip>
+
+In this approach, images are passed to the agent at the start and stored as `task_images` alongside the task prompt. The agent then processes these images throughout its execution.
+
+Consider the case where Alfred wants to verify the identities of superheroes attending the party. He already has a dataset of images from previous parties with the names of the guests. Given a new visitor's image, the agent can compare it with the existing dataset and decide whether to grant access.
+
+In this scenario, a guest is claiming to be Wonder Woman — but Alfred suspects it may be The Joker in disguise.
+
+First, load the images:
+
+```python
+from PIL import Image
+import requests
+from io import BytesIO
+
+image_urls = [
+    "https://upload.wikimedia.org/wikipedia/commons/e/e8/The_Joker_at_Wax_Museum_Plus.jpg", # Joker image
+    "https://upload.wikimedia.org/wikipedia/en/9/98/Joker_%28DC_Comics_character%29.jpg" # Joker image
+]
+
+images = []
+for url in image_urls:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" 
+    }
+    response = requests.get(url,headers=headers)
+    image = Image.open(BytesIO(response.content)).convert("RGB")
+    images.append(image)
+```
+
+Now run the agent with the images:
+
+```python
+from smolagents import CodeAgent, OpenAIServerModel
+
+model = OpenAIServerModel(model_id="gpt-4o")
+
+# Instantiate the agent
+agent = CodeAgent(
+    tools=[],
+    model=model,
+    max_steps=20,
+    verbosity_level=2
+)
+
+response = agent.run(
+    """
+    Describe the costume and makeup that the comic character in these photos is wearing and return the description.
+    Tell me if the guest is The Joker or Wonder Woman.
+    """,
+    images=images
+)
+```
+
+Example output:
+
+```python
+    {
+        'Costume and Makeup - First Image': (
+            'Purple coat and a purple silk-like cravat or tie over a mustard-yellow shirt.',
+            'White face paint with exaggerated features, dark eyebrows, blue eye makeup, red lips forming a wide smile.'
+        ),
+        'Costume and Makeup - Second Image': (
+            'Dark suit with a flower on the lapel, holding a playing card.',
+            'Pale skin, green hair, very red lips with an exaggerated grin.'
+        ),
+        'Character Identity': 'This character resembles known depictions of The Joker from comic book media.'
+    }
+```
+
+The output confirms the guest is The Joker impersonating Wonder Woman — Alfred can deny entry.
+
+## Providing images with dynamic retrieval
+
+<Tip>
+  You can follow the code in [this Python file](https://huggingface.co/agents-course/notebooks/blob/main/unit2/smolagents/vision_web_browser.py).
+</Tip>
+
+The previous approach works well when the guest is in the database. But what if the guest is unknown? One solution is to dynamically retrieve images and information from external sources by browsing the web.
+
+In this approach, images are dynamically added to the agent's memory during execution. Agents in `smolagents` are based on the `MultiStepAgent` class, which operates in a structured cycle:
+
+1. **SystemPromptStep:** Stores the system prompt.
+2. **TaskStep:** Logs the user query and any provided input.
+3. **ActionStep:** Captures logs from the agent's actions and results.
+
+When browsing, the agent can take screenshots and save them as `observation_images` in the `ActionStep`.
+
+![Dynamic image retrieval](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/smolagents-can-see/diagram_adding_vlms_smolagents.png)
+
+To complete this example, install the required tools:
+
+```bash
+pip install "smolagents[all]" helium selenium python-dotenv
+```
+
+Define the browsing tools:
+
+```python
+@tool
+def search_item_ctrl_f(text: str, nth_result: int = 1) -> str:
+    """
+    Searches for text on the current page via Ctrl + F and jumps to the nth occurrence.
+    Args:
+        text: The text to search for
+        nth_result: Which occurrence to jump to (default: 1)
+    """
+    elements = driver.find_elements(By.XPATH, f"//*[contains(text(), '{text}')]")
+    if nth_result > len(elements):
+        raise Exception(f"Match n°{nth_result} not found (only {len(elements)} matches found)")
+    result = f"Found {len(elements)} matches for '{text}'."
+    elem = elements[nth_result - 1]
+    driver.execute_script("arguments[0].scrollIntoView(true);", elem)
+    result += f"Focused on element {nth_result} of {len(elements)}"
+    return result
+
+
+@tool
+def go_back() -> None:
+    """Goes back to previous page."""
+    driver.back()
+
+
+@tool
+def close_popups() -> str:
+    """
+    Closes any visible modal or pop-up on the page. Use this to dismiss pop-up windows! This does not work on cookie consent banners.
+    """
+    webdriver.ActionChains(driver).send_keys(Keys.ESCAPE).perform()
+```
+
+Define a screenshot callback that stores captured images in the agent's `ActionStep.observations_images`:
+
+```python
+def save_screenshot(step_log: ActionStep, agent: CodeAgent) -> None:
+    sleep(1.0)  # Let JavaScript animations happen before taking the screenshot
+    driver = helium.get_driver()
+    current_step = step_log.step_number
+    if driver is not None:
+        for step_logs in agent.logs:  # Remove previous screenshots from logs for lean processing
+            if isinstance(step_log, ActionStep) and step_log.step_number <= current_step - 2:
+                step_logs.observations_images = None
+        png_bytes = driver.get_screenshot_as_png()
+        image = Image.open(BytesIO(png_bytes))
+        print(f"Captured a browser screenshot: {image.size} pixels")
+        step_log.observations_images = [image.copy()]  # Create a copy to ensure it persists, important!
+
+    # Update observations with current URL
+    url_info = f"Current url: {driver.current_url}"
+    step_log.observations = url_info if step_logs.observations is None else step_log.observations + "\n" + url_info
+    return
+```
+
+This function is passed to the agent as `step_callback`, triggered at the end of each step.
+
+Now build the vision agent for web browsing:
+
+```python
+from smolagents import CodeAgent, OpenAIServerModel, DuckDuckGoSearchTool
+model = OpenAIServerModel(model_id="gpt-4o")
+
+agent = CodeAgent(
+    tools=[DuckDuckGoSearchTool(), go_back, close_popups, search_item_ctrl_f],
+    model=model,
+    additional_authorized_imports=["helium"],
+    step_callbacks=[save_screenshot],
+    max_steps=20,
+    verbosity_level=2,
+)
+```
+
+Run the agent to verify the guest's identity:
+
+```python
+agent.run("""
+I am Alfred, the butler of Wayne Manor, responsible for verifying the identity of guests at party. A superhero has arrived at the entrance claiming to be Wonder Woman, but I need to confirm if she is who she says she is.
+
+Please search for images of Wonder Woman and generate a detailed visual description based on those images. Additionally, navigate to Wikipedia to gather key details about her appearance. With this information, I can determine whether to grant her access to the event.
+""" + helium_instructions)
+```
+
+The `helium_instructions` parameter provides navigation guidance for the agent to follow while browsing.
+
+Example final output:
+
+```python
+Final answer: Wonder Woman is typically depicted wearing a red and gold bustier, blue shorts or skirt with white stars, a golden tiara, silver bracelets, and a golden Lasso of Truth. She is Princess Diana of Themyscira, known as Diana Prince in the world of men.
+```
+
+With this, Alfred now has the tools to verify guest identities and ensure only the right people enter Wayne Manor.
+
+## Further reading
+
+- [We just gave sight to smolagents](https://huggingface.co/blog/smolagents-can-see) — Blog post describing the vision agent functionality
+- [Web browser automation with agents](https://huggingface.co/docs/smolagents/examples/web_browser) — Example for web browsing using a vision agent
+- [Vision web browser example](https://github.com/huggingface/smolagents/blob/main/src/smolagents/vision_web_browser.py) — Full source for the web browsing vision agent
